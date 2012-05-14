@@ -1,0 +1,111 @@
+\documentclass[letterpaper,11pt]{report}
+\input{studentDefined}
+
+%%%%% Packages
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{booktabs}
+%\usepackage{subfigure}
+\usepackage{subfig}
+\def \subfigure{\subfloat} %mjpp so won't have to change subfigure to subfloat if didn't realize subfigure is deprecated
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{setspace}
+\usepackage{paralist}
+\usepackage[pdftex]{graphicx}
+\usepackage{times} %mjpp
+\pdfpagewidth 8.5in
+\pdfpageheight 11in 
+\setlength\topmargin{0in}
+\setlength\headheight{0in}
+\setlength\headsep{0in}
+\setlength\textheight{8.5in}
+
+\setlength\textwidth{6.5in}
+\setlength\oddsidemargin{0in}
+\setlength\evensidemargin{0in}
+\setlength\parindent{0.25in}
+%\setlength\parskip{0.125in}
+
+%\graphicspath{{./gfx/}}
+%\setlength{\parskip}{0.5ex}
+%\setlength\fboxsep{0pt}
+%\setlength\fboxrule{0.5pt}
+\newcommand{\hpad}[1]{\hspace{#1in}}
+
+
+\lstnewenvironment{notes}{\lstset{language=,breaklines,frame=lines,framerule=1.0pt}}{}
+
+%%%%% Headers
+\title{\covertitle}
+\author{By\\*\paperauthor}
+\date{\vfill WASHINGTON STATE UNIVERSITY\\* \papermonth~\paperyear}
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{}
+\fancypagestyle{plain}{
+    \fancyhead{}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{headings}{
+    \fancyhead{}
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+%\def\tableofcontents{\section*{\centering CONTENTS}\@starttoc{toc}}
+%\def\tableofcontents{\section*{CONTENTS}\@starttoc{toc}}
+%\renewcommand{\contentsname}{\centering TABLE OF CONTENTS}
+\renewcommand{\contentsname}{TABLE OF CONTENTS}
+
+\begin{document}
+
+    \pagestyle{plain}
+		\pagenumbering{roman}
+
+%    \input{./wsu/frontmatter}
+    \input{frontmatter}
+    %\maketitle
+
+    \newpage
+    \singlespacing
+    \pagestyle{headings}
+
+%\begin{center}TABLE OF CONTENTS\end{center}
+    \tableofcontents
+
+    \pagebreak
+    \addcontentsline{toc}{chapter}{LIST OF TABLES}
+    \listoftables
+
+    \newpage
+    \addcontentsline{toc}{chapter}{LIST OF FIGURES}
+    \listoffigures
+
+
+% adds an entry to the table of contents but subentries are not indented
+%    \addtocontents{toc}{\protect\par\noindent \\ \textbf{CHAPTER} \protect\par}
+
+    \newpage
+    \chapter*{Dedication}
+        \input{dedication}
+    
+    \newpage
+    \pagenumbering{arabic}
+  \doublespacing
+
+% from here starts all chapters
+\include{StudentChapters}
+    \clearpage
+    \newpage
+    \singlespacing
+    \nocite{*} % TODO Uncomment this to only display cited values
+    \bibliographystyle{IEEEtran}
+        \addcontentsline{toc}{chapter}{Bibliography}
+        %\bibliography{References}
+         \bibliography{\myBibs}
+\end{document}

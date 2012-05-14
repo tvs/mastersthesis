@@ -1,0 +1,117 @@
+In recent years, the Internet community has innovated extraordinarily well.
+Platforms such as \emph{Facebook}, \emph{Twitter}, and \emph{Amazon} have
+pushed the boundaries of web technology, demonstrating on a large scale, the
+impact and viability of social media and e-commerce. Now more than ever,
+businesses and startups are flocking to the web to offer their services.
+However, with the web comes a set of new and unique challenges. The sheer
+monolithic size of one's audience, the tremendous amount of data associated
+with the service, the capricious nature of many web-users, and the rapid pace
+at which competition develops name only a few such difficulties.
+
+One of the more interesting ways of addressing these problems of storage,
+computation, and stability is to utilize the Cloud. Within the cloud,
+developers are given access to an ``infinite'' realm of storage and computation
+which they can provision and utilize according to their needs. This concept of
+Infrastructure as a Service (IaaS) allows even the smallest businesses to
+provision the necessary computational resources without the overhead involved
+in purchasing, configuring, and maintaining a private infrastructure. In
+essence, computation becomes a utility similar to electricity and water
+supplies, rather than a fixed value to be allocated across a set of problems,
+and users are charged in accordance with the amount of resources they consume.
+
+Among cloud providers, Amazon's Web Services (AWS) has risen to a seat of
+prominence. In AWS, one of the most important and driving aspects is the notion
+of \emph{elasticity}. Put another way: on demand scaling of resources. Though
+AWS is composed of many different services the most notable demonstration of
+this concept is the Amazon Elastic Compute Cloud (EC2). Users of EC2 can
+instantly scale, both up \emph{and} down, the amount of resources allocated to
+a task, neatly avoiding problems of both under- and over-provisioning.
+Similarly, Amazon's Simple Storage Service (S3) provides access to cloud-backed
+storage space, allowing users to offload data from their servers to Amazon's in
+a secure and stable manner.
+
+By utilizing a combination of EC2 and S3, web service providers can scale their
+resource usage in accordance to their needs. When computational speed becomes
+an issue, developers can add another compute node to help service their users'
+requirements, helping to alleviate unexpected downtime or slowness -- two major
+players in determining whether a userbase will stick with a product or if they
+will move to another. Likewise, when the amount of data being generated becomes
+too large or cumbersome, developers and technicians can move that data into the
+cloud, potentially freeing them from having to purchase another data server.
+
+For a simple example, consider the requirements of a microblogging service
+(which we will call \emph{Aflutter}). Much of the time, Aflutter receives a
+steady flow of traffic and thus their designers and developers have planned
+around it, purchasing an infrastructure suitable for those needs. However, as
+events transpire throughout the world, users are driven to communicate about
+them rapidly, informing one another, providing commentary, or sometimes simply
+to make jokes. Given that these traffic spikes occur in response to events in
+the world around us, they are supremely difficult, if not impossible to
+anticipate. With the cloud, expansion and accomodation can occur responsively
+and the engineers in charge of keeping Aflutter running smoothly can allocate,
+on the fly, additional computational power to help cope with this surge of
+usage. As the event dies down and demand returns more towards normal levels,
+these extra nodes can be freed up and the costs associated with their usage
+cease to accumulate.
+
+The emergence and realization of this elastic model has been propitious --
+elasticity can and has been beneficial for many applications, but with it comes
+its own assortment of challenges for developers. Among these challenges is the
+difficulty of managing data in a highly dynamic environment. In this paper, we
+explore the issues associated with creating and managing an elastic
+\emph{key-value} storage system.
+
+\emph{Auspice}, the product of this exploration, was motivated by challenges in
+accelerating \emph{service-oriented} computations in the cloud. In our earlier
+works, the key-value cache was used to store the intermediate results of web
+services which were then used in the process of completing other computations.
+Similar to our previous example, this type of cache benefits from elasticity as
+periods of intensive querying can be responded to through the self-managed
+expansion of resources.
+
+During the creation of \emph{Auspice}, we also identified a number of areas for
+improvement. The two primary areas we recognized were in the macro and micro
+levels, that is, the management of the cache as a whole and the management of
+each individual cache node. This research is focused additionally on the micro
+level. In particular, this paper focuses on mechanisms for managing data
+placement within the cache and prioritizing the retrieval of high-value
+elements.
+
+\section{Research Contributions} % (fold)
+\label{sec:Research_Contributions}
+The main goal of this research is to explore and evaluate the design and
+optimizations of the individual cache nodes. To do that, we implement an
+elastic key-value store suitable for the cloud environment, including efficient
+algorithms for inserting, evicting, deleting, searching, and migrating data.
+The main contributions of our work are as follows:
+\begin{itemize}
+  \item Exploring three different data indexing schemes: B$^+$-trees, Extendible
+    Hashing, and Bloom filters.
+  \item Providing mechanisms for automated cache scaling.
+  \item Evaluating multiple approaches for data eviction ranging from First-In
+    First-Out (FIFO) to our own custom approach.
+  \item Creating a hierarchy of data storage mediums that reflect the
+    importance of the data stored within.
+  \item Mechanisms for dynamically placing data within the hierarchy.
+\end{itemize}
+
+% section Research Contributions (end)
+
+\section{Thesis Overview} % (fold)
+\label{sec:Thesis_Overview}
+The ultimate goal of this thesis is to describe the various mechanisms
+implemented to improve the performance of each cache node. The following
+chapters provide additional background and the details involved in this
+pursuit. Chapter~\ref{chap:Background} provides background for the creation of
+\emph{Auspice}, our key-value store, as well as information about Amazon Web
+Services (AWS). Chapter~\ref{chap:Indexing_Strategies} includes an analysis of
+three data indexing schemes and the tradeoffs between them.
+Chapter~\ref{chap:Eviction_Strategies} evaluates different data eviction
+strategies and their impact on cache performance in situations where unlimited
+storage is infeasible. Chapter~\ref{chap:Storage_Mediums} establishes a
+hierarchy of data storage mediums as well as mechanisms for evaluating the
+``importance'' of data units, placing them within the hierarchy, and evicting
+them from the cache. Finally, Chapter~\ref{chap:Conclusion} concludes the
+thesis and provides a discussion of future works.
+
+% section Thesis Overview (end)

@@ -1,0 +1,78 @@
+\doublespacing
+
+%%%%% Cover Page
+\begin{titlepage}
+    \begin{center}
+        \begin{doublespace}
+            {\Large \textbf{\covertitle}}
+        \end{doublespace}
+	     
+        \begin{singlespace}
+            \vfill
+            By \\*[\baselineskip]
+            \textbf{\MakeUppercase \paperauthor}
+           
+            \vfill
+            A thesis submitted in partial fulfillment of\\*
+            the requirements for the degree of\\*[\baselineskip]
+            MASTER OF SCIENCE IN COMPUTER SCIENCE\\*[2\baselineskip]
+            WASHINGTON STATE UNIVERSITY\\*
+            School of Engineering and Computer Science\\*[\baselineskip]
+            \papermonth ~\paperyear
+        \end{singlespace}
+    \end{center}
+\end{titlepage}
+
+%%%%% Signature Page
+\newpage
+\setcounter{page}{2}
+\pagestyle{headings}
+
+\vspace*{150pt}
+\noindent \hpad{0.5}To the Faculty of Washington State University:
+
+\hpad{0.5}The members of the Committee appointed to examine the thesis of
+
+\noindent \hpad{0.5}{\MakeUppercase \paperauthor} find it satisfactory and recommend that
+
+\noindent \hpad{0.5}it be accepted.    
+
+\vspace*{50pt}
+	\begin{flushright}
+		\makebox[0.5\textwidth]{\hrulefill}\\*[-0.5\baselineskip]
+		\makebox[0.5\textwidth][c]{\chairperson, Chair}
+		\\*[50pt]
+		\makebox[0.5\textwidth]{\hrulefill}\\*[-0.5\baselineskip]
+		\makebox[0.5\textwidth][c]{\secondchair}
+		\\*[50pt]
+		\makebox[0.5\textwidth]{\hrulefill}\\*[-0.5\baselineskip]
+		\makebox[0.5\textwidth][c]{\thirdchair}
+		\\*[50pt]
+	\end{flushright}
+
+%%%%% Acknowledgments	
+\newpage
+\addcontentsline{toc}{chapter}{ACKNOWLEDGMENTS}
+\begin{center}
+    \Large \textbf{ACKNOWLEDGMENTS}\\*[\baselineskip]
+\end{center}
+\input{acknowledgments}
+
+%%%%% Abstract
+\newpage
+\addcontentsline{toc}{chapter}{ABSTRACT}
+\begin{center}
+    \begin{doublespace}
+        {\Large \textbf{\covertitle}}\\*[\baselineskip]
+        {\Large \textbf{Abstract}}\\*[\baselineskip]
+    \end{doublespace}
+    \begin{singlespace}
+	    by \paperauthor, M.S.\\*
+	    Washington State University\\*
+	    \papermonth ~\paperyear\\*[3\baselineskip]
+	  \end{singlespace}
+\end{center}
+\noindent Chair: \chairname\\*
+\par
+\input{abstract}
+
