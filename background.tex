@@ -142,7 +142,7 @@ records need to be transferred. Furthermore, the performance of the entire
 cache is dependent upon the speed of record retrieval and the speed at which it
 can determine hits and misses. In Chapter~\ref{chap:Indexing_Strategies}, we
 present background information on three common indexing structures:
-B$^+$-trees, Extendible Hashing, and Bloom Filters. Later, we expand on this
+\bptrees, Extendible Hashing, and Bloom Filters. Later, we expand on this
 work to include other storage mediums beyond memory.
 
 % Eviction
@@ -354,7 +354,7 @@ contrast to S3, EBS volumes do not provide unlimited storage, and thus their
 size must be predefined by users before being mounted onto an EC2 instance.
 However, because these volumes are mounted to the instance, this suggessts the
 potential for higher throughput than S3, where communications occur through
-high-level SOAP/REST protocols transmitted over HTTP\. From a cost analysis
+high-level SOAP/REST protocols transmitted over HTTP.\ From a cost analysis
 standpoint, EBS invokes additional storage and request overhead to the
 hourly-based EC2 instance costs.
 % subsubsection persistent_options (end)

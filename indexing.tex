@@ -1,5 +1,35 @@
-\section{B$^+$-Trees} % (fold)
+To support the key-value cache, each node must implement some form of indexing
+service. Each indexing service must support a number of tasks such as
+\emph{insertion}, \emph{deletion}, \emph{retrieval}, \emph{eviction} and
+\emph{migration}. We consider three distinct but common indexing schemes:
+\bptrees\cite{btree,bplustree}, Extendible Hashing\cite{ullman}, and
+Counting Bloom Filters\cite{countingbloom1,countingbloom2}.
+
+In order to operate in the elastic environment of our cache, when a node
+overflows it must be capable of migrating a subset of its data records to
+another node either preexisting or freshly allocated. Each of these schemes
+have inherent differences in their structure and operation and, as such, are
+compelling candidates for extension into the elastic makeup of \emph{Auspice}.
+
+The remainder of this chapter will present background on each of the indexing
+structures, describe the implementation of their migration mechanisms, and
+provide an experimental analysis of their performance benchmarks.
+
+\section{\bptrees} % (fold)
 \label{sec:b_trees}
+B-Trees and \bptrees are used in many of today's systems. The \bptree is a
+multilevel indexing scheme that automatically adjusts the number of levels
+depending upon the file size and stores all of its records in the leaf nodes.
+Each record is stored in ascending order from left to right and each leaf node
+is linked to the next and previous nodes. In this way, its design is
+specifically crafted to accelerate queries over a range of
+values\cite{navathe,ullman}. In terms of retrieval, \bptrees are balanced data
+structures, where all paths from the root to any leaf have the same length
+(similar to binary trees, with approximately $log_2 n$ depth).
+
+% TODO: Figure for B+-Tree (Wikipedia has a good example, also on the
+% whiteboard still), structural explanation. This section is also cribbed
+% heavily from IJNGC paper, look at rewrite.
 
 % section B_Trees (end)
 
