@@ -24,6 +24,7 @@
 *.nlo
 *.out
 *.pdf
+!figures/*.pdf
 *.pdfsync
 *.ps
 *.snm
