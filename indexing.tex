@@ -25,11 +25,37 @@ is linked to the next and previous nodes. In this way, its design is
 specifically crafted to accelerate queries over a range of
 values\cite{navathe,ullman}. In terms of retrieval, \bptrees are balanced data
 structures, where all paths from the root to any leaf have the same length
-(similar to binary trees, with approximately $log_2 n$ depth).
+(similar to binary trees, with approximately log$_2 n$ depth).
 
-% TODO: Figure for B+-Tree (Wikipedia has a good example, also on the
-% whiteboard still), structural explanation. This section is also cribbed
-% heavily from IJNGC paper, look at rewrite.
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{figures/bplustree.pdf}
+\end{center}
+\caption{\bptree structure}
+\label{fig:bplustree}
+\end{figure}
+
+Structurally, \bptrees are composed as shown in Figure~\ref{fig:bplustree}.
+Internal nodes, those colored beige, act as pointers to other nodes in the
+structure. All keys in the left branch of the key \emph{K} are less than or
+equal to \emph{K}, while all keys to the right are greater than \emph{K}. While
+searching, we compare the search key with the entries in the tree until such a
+point as we reach the leaf node. Leaf nodes, those colored white, contain the
+stored keys and pointers to the physical data location (blue). Additionally, in
+order to assist with range queries, leaf nodes also contain a pointer to the
+next leaf node, in order (orange).
+
+With this sort of structure, we can see that range queries are made quite
+simple and quick. Given a range $(k_{start}, k_{end})$ we begin by searching to
+find $k_{start}$ then proceed to iterate through the leaves until we find a
+node greater than $k_{end}$. The search then returns the set of data identified
+in that range. Due to this support, we expect the \bptree integration to be
+well suited to elastic cache. Quick access to ranges of data should lead to
+much faster data migration in the event of node additions. Data migration,
+which is composed of a set of key deletions, can again be efficiently managed
+in the same way as a range query is.
+
+% TODO: This section is cribbed heavily from IJNGC paper, look at rewrite.
 
 % section B_Trees (end)
 
