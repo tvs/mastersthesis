@@ -46,14 +46,39 @@ order to assist with range queries, leaf nodes also contain a pointer to the
 next leaf node, in order (orange).
 
 With this sort of structure, we can see that range queries are made quite
-simple and quick. Given a range $(k_{start}, k_{end})$ we begin by searching to
+simple and quick. Given a range $[k_{start}, k_{end}]$ we begin by searching to
 find $k_{start}$ then proceed to iterate through the leaves until we find a
 node greater than $k_{end}$. The search then returns the set of data identified
 in that range. Due to this support, we expect the \bptree integration to be
 well suited to elastic cache. Quick access to ranges of data should lead to
 much faster data migration in the event of node additions. Data migration,
 which is composed of a set of key deletions, can again be efficiently managed
-in the same way as a range query is.
+in the same way as a range query is. The \bptree migration algorithm is shown
+in Algorithm~\ref{alg:migrate1}.
+
+\begin{algorithm}[htp]
+\small
+\caption{\label{alg:migrate1}BT\_Migrate($k_{start}$, $k_{end}$)} \begin{algorithmic}[1]
+\STATE $\triangleright$ manipulate B$^+$-tree index and transfer the keys in form of a string, $keys$
+\STATE $end \leftarrow false$
+\STATE $\triangleright$ $L =$ leaf initially containing $k_{start}$ 
+\STATE $L \leftarrow btree$.search($k_{start}$)
+\WHILE{$(\neg end \wedge L \neq NULL)$}
+ \STATE $\triangleright$ each leaf node contains multiple keys
+ \FORALL {$(k,v) \in L$}
+   \IF {$k \le k_{end}$}
+     \STATE $keys$.append($k$, $v$)
+     \STATE $btree$.delete($k$)
+   \ELSE
+     \STATE $end \leftarrow true$
+     \STATE break
+   \ENDIF
+ \ENDFOR
+ \STATE $L \leftarrow L$.next()
+\ENDWHILE
+\STATE return $keys$
+\end{algorithmic}
+\end{algorithm}
 
 % TODO: This section is cribbed heavily from IJNGC paper, look at rewrite.
 
@@ -61,13 +86,160 @@ in the same way as a range query is.
 
 \section{Extendible Hashing} % (fold)
 \label{sec:extendible_hashing}
+Hash tables are another ubiquitous form of indexing and are often a favorite
+tool of developers looking for key-value storage. These structures excel at
+offering constant-time searches, unlike the logarithmic searches of \bptrees.
+However, there is a tradeoff in that hash tables are not well-equipped to
+handle range queries.
+
+In most hash implementations, we assume there is some hash function $h(k)
+\exists [0, B-1]$, where $B$ is the total number of buckets stored in the
+table. Each bucket then contains a set of records, stored either in memory or
+in secondary storage. Ideally, a hash function maps each key to a distinct
+bucket. In practice however, this is seldom possible as the key range is
+significantly larger than $B$. Therefore, the buckets typically allow for the
+storage of a set of records. Even still, they can overflow. To avoid this, hash
+tables implement some form of collision resolution. One of the most simple
+techniques is to have the bucket overflow into a chain. Records mapping to an
+already occupied bucket are stored in a linked list format attached to that
+bucket. This performance of this solution degrades linearly as the number of
+records $K$, and more importantly, the ratio of $K$ to $B$ increases.
+
+We can avoid this problem by using dynamic hashing\cite{dh2}, where the number
+of buckets, $B$, is variable. In dynamic hashing schemes, $B$ is increased whenever
+necessary. For the purposes of our elastic cache, we have implemented a form of
+dynamic hashing called Extendible Hashing\cite{dh1}, which introduces the
+concept of a \emph{directory} -- an array of pointers to the hash buckets. The
+buckets then contain an additional array of pointers to the physical location
+of the records.
+
+Initially, each directory contains a single bucket and is allowed to grow
+when required. In Extendible Hashing, the length of the directory is always a
+power of two, which means that each growing phase doubles the size of the
+directory. Because multiple pointers can reference the same physical bucket,
+the number of actual buckets can be less than or equal to the size of the
+directory. A hash function $h(k)$ computes a binary sequence for each record
+based on the search key, $k$, and the first $i$ least significant bits are used
+to determine the bucket to which the record belongs. When a directory contains
+$2^i$ pointers to buckets, the actual number of buckets is $\leq 2^i$.
+
+Searching for a key in an extendible hash table is done in two steps. First,
+the hash function is run over the key, and the least significant $i$ bits are
+used to determine the bucket the key belongs to. Once the bucket has been
+identified, a linear scan is run over the contents of the bucket to return the
+position of the record, if found. Again, the search time increases as the
+number of records per bucket increases. A large number of records per bucket is
+also indicative of fewer splits and a smaller directory. As the directory size
+increases, the number of records per bucket should thin out in the general
+case. As mentioned earlier, while Extendible Hashing offers $O(1)$ time
+exact-match queries, range queries suffer as the hash function disrupts $k$'s
+original locality.
+
+To support migration, we implemented Extendible Hashing in such a way that we
+could dynamically specify the number of records per bucket. Because Extendible
+Hash tables do not store the records in a particular order, we must linearly
+scan through each bucket and delete keys that lie within the migration range.
+
+The migration procedure takes as input, the range of keys to be migrated,
+$[k_{start}, k_{end}]$. We begin by traversing all directories, and for each
+directory we follow the pointer to its corresponding bucket. Any key, $k$, which
+lies in the migration range is appended, along with its data object, to an
+array. This array is returned once all records have been scanned. This
+process is shown in Algorithm~\ref{alg:migrate2}.
+
+\begin{algorithm}[htp]
+\small
+\caption{\label{alg:migrate2}EH\_Migrate($k_{start}$, $k_{end}$)} \begin{algorithmic}[1]
+\STATE static $H$ $\triangleright$ bring extendible hashtable to scope
+\STATE $keys \leftarrow \{\}$
+\FOR {$x \leftarrow 0$ to  $2^i-1$}
+  \STATE $D_x \leftarrow H$.getDirectoryAt($x$)
+ \FOR {$y \leftarrow 0$ to $|D_x|-1$}
+   \STATE $B_y \leftarrow D_x$.getBucketAt($y$)
+   \FORALL {$k \in B_y | k \ge k_{start} \wedge k \le k_{end}$}
+       \STATE $keys \leftarrow keys \cup~(k,v)$
+       \STATE $H$.delete($k$)
+   \ENDFOR
+ \ENDFOR
+\ENDFOR
+\STATE return $keys$
+\end{algorithmic}
+\end{algorithm}
 
 % section extendible_hashing (end)
 
 \section{Bloom Filters} % (fold)
 \label{sec:bloom_filters}
 
+Bloom Filters\cite{bloomfilter1} are probabilistic data structures used to
+quickly determine the membership of a record in a set. It is composed of a
+$m$-bit length bit array and a set of $j$ hash functions, each of which hashes
+a set element to one of the $m$ different values. Generally, $m \gg j$, which
+reduces the probability of the hash function setting the same bit for a record.
+Though Bloom Filters are vulnerable to false positives, false negatives are not
+possible.
+
+Insertions into a Bloom Filter are simple: apply the hash function to the key
+and set the corresponding bits. Determining membership is also simple: apply
+each of the $j$ hash functions to the key and verify if the corresponding bits
+are set. If any of the $j$ bits are not set, then the element is not present.
+However, because false positives are possible, even if each of the bits are
+set, the record may still not be present, and so a scan becomes necessary after
+a pseudo-hit. Fortunately, the false positive rate has a bound $f = (1 -
+e^{(-jN/m)})^j$, where $j$ is the number of hash functions, $m$ is the length
+of the bit array, and $N$ is the number of set bits. From this, we can clearly
+see that the false positive rate increases as the number of inserts increases.
+By choosing a relatively large $m$ and independent hash functions, we can
+render the false positive rate negligible\cite{falsepositive}.
+
+Traditionally, Bloom Filters disallow deletions as the same bit can be set for
+multiple records. By modifying the bit array, false negatives would become a
+possibility, which are prohibitive. To support deletion, we implemented a
+variant called Counting Bloom Filters\cite{countingbloom1,countingbloom2}. Each
+bit in the bit array is associated with a 4-bit counter, which then keeps track
+of the number of records that set the bit. This counter enables the delete
+operation.
+
+These structures are most useful for applications that require fast tests of
+record existence, and especially beneficial for those that test non-existence.
+To search for a record with key $k$, we apply the $j$ hash functions to $k$. We
+then $AND$ all bits from the bit array corresponding to the locations $h_i(k) |
+i = (0,\ldots,j)$. If the result of this operation is one, then the record may be
+present and a scan is performed to retrieve the record. If the result is zero,
+the record is non-existence. Because a linear scan may be required for a hit,
+there is a costly overhead involved in the case of false positives. However, as
+mentioned, low false positive rates can be ensured by having a large $m$ and
+independent hash functions.
+
+Implementing migration in a Counting Bloom Filter is also quite simple. Again
+we operate over the range $[k_{start},k_{end}]$. We begin from the minimum
+threshold and increment until we reach the maximum threshold, searching for
+each key in the range. Keys that are present are then deleted. This makes
+migration time linear to the amount of keys within $[k_{start},k_{end}]$. This
+algorithm is demonstrated in Algorithm~\ref{alg:migrate3}.
+
+\begin{algorithm}[htp]
+\small
+\caption{\label{alg:migrate3}CBF\_Migrate($k_{start}$, $k_{end}$)} \begin{algorithmic}[1]
+\STATE static $H$ $\triangleright$ counting bloom filter to scope
+\STATE $keys \leftarrow \{\}$
+\FOR {$k \leftarrow k_{start}$ to  $k_{end}$}
+  \IF {$H$.contains($k$)}
+    \STATE $v \leftarrow H$.retrieve($k$)
+    \IF {$v \neq$ NULL}
+      \STATE $keys \leftarrow keys \cup~(k,v)$
+    \ENDIF
+  \ENDIF
+\ENDFOR
+\STATE return $keys$
+\end{algorithmic}
+\end{algorithm}
 % section bloom_filters (end)
+
+\section{Elastic Cache Support} % (fold)
+\label{sec:elastic_cache_support}
+
+% section elastic_cache_support (end)
 
 \section{Experiments} % (fold)
 \label{sec:experiments_indexing}
