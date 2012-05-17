@@ -238,6 +238,116 @@ algorithm is demonstrated in Algorithm~\ref{alg:migrate3}.
 
 \section{Elastic Cache Support} % (fold)
 \label{sec:elastic_cache_support}
+We have implemented this system on EC2 and here we describe the system within
+that context. The Amazon Elastic Compute Cloud (EC2) supports
+Infrastructure-as-a-Service (IaaS), allowing users to allocate nodes on demand.
+EC2 nodes (\emph{instances}) are virtual machines that can launch system
+snapshots (\emph{images}). These virtual machines are deployed onto various
+architectures (\emph{instance types}) with varying costs depending upon their
+capabilities. As a baseline, we have chosen to use only small instances in our
+implementation, though there are instances with far greater (and fewer)
+capabilities available.
+
+During system execution, records may continually be inserted into the cache
+nodes. Overflow of any individual node may invoke an incremental scaling
+effort. This process involves starting a new EC2 node and migrating a subset of
+the data from the overflown node to the newly allocated node. There are two
+areas of overhead in this process: (1) instance allocation time, which can take
+up to several minutes during peak time, and (2) data migration time, which
+involves identifying the migration range and network transfer time.
+
+In our experience, instance allocation time dominates that of data migration.
+We thus, implement a system that pre-launches instances speculatively when some
+threshold, $T$, has been met. At background thread initiates the pre-launching
+and begins to eagerly migrate data from the fullest node once the new one has
+been booted. Out threshold $T$ is based on the following observations: if the
+request rate is high, then $T$ should be lowered, as the nodes are likely to
+fill up faster. Conversely, if the request rate is low, then $T$ should be
+raised. If $n$ is the node to insert some $(k,v)$ pair, we use the following to
+estimate $n$'s threshold.
+\begin{center}
+  $T = c(n)/2 + \delta_H \times (||N|| - R/\delta_L)$
+\end{center}
+where $\delta_L$ and $\delta_H$ are constants: the lowest and highest
+\emph{expected} querying rate respectively. $R$ is the current request rate,
+$c(n)$ is the capacity of node $n$ and $||N||$ is the total number of nodes in
+our cache. As the number of nodes, $||N||$ increases, the threshould should
+also increase so as to delay the allocation of new nodes. $R/\delta_L$ is used
+to normalize the current rate, $R$.
+
+We use this threshold in our cache insertion algorithm, shown in
+Algorithm~\ref{alg:optimize}. The identifiers used in
+Algorithm~\ref{alg:optimize} are listed in Table~\ref{tab:vars1}.
+
+\begin{table}[htp]
+\caption{\label{tab:vars1}Listing of Identifiers for Algorithm~\ref{alg:optimize}}
+\centering
+\begin{tabular}[]{| c || p{5.5cm} |}
+  \hline
+  \textbf{Identifier} & \textbf{Description} \\
+  \hline
+  \hline
+
+  $k$ & A queried key \\
+  \hline
+  $B = (b_1, \ldots, b_p)$ & The list of all buckets on the hash line\\
+  \hline
+  $h(k)$ & The hash function, which returns the closest upper bucket to $k$ \\
+  \hline
+  $N =(n_1, \ldots, n_m)$  & The set of all nodes in the cooperative cache \\
+  \hline
+  $n \in N$  & A cache node  \\
+  \hline
+  $||n||$  & Current size of index on node $n$  \\
+  \hline
+  $\lceil{n}\rceil$  & Overall capacity on node $n$ \\
+  \hline
+ $||N||$  & Number of nodes part of the cooperative cache $N$  \\
+  \hline
+  $R$  & Query intensity, i.e.\ queries per time step  \\
+\hline
+  \end{tabular}
+\end{table}
+
+\begin{algorithm}[htp]
+\small
+\caption{\label{alg:optimize}Speculative-Insert($k$, $v$, $\delta_L$,
+$\delta_H$)} \begin{algorithmic}[1] \STATE static $NodeMap[\ldots]$
+\STATE static $B = (\ldots)$
+\STATE static $h' : K \rightarrow [0,r)$
+\STATE $n \leftarrow NodeMap[h'(k)]$
+\STATE $T = c(n)/2 + \delta_H \times (||N|| - R/\delta_L)$
+\IF {$T < \lceil{n}\rceil \times 0.1$}
+	\STATE $T \leftarrow \lceil{n}\rceil \times 0.1 $\ \ \ \ $\triangleright$ to avoid
+	extremely low values of threshold
+\ENDIF
+\IF {$T > (\lceil{n}\rceil \times 0.75) $}
+	\STATE $T \leftarrow \lceil{n}\rceil \times 0.95$\ \ \ \ $\triangleright$ to delay
+	allocation of new nodes
+\ENDIF
+
+\IF {$||n|| + sizeof(v) < T$}
+	\STATE $n$.insert($k,v$)\ \ \ \ $\triangleright$ insert directly on node $n$
+\ELSIF{$||n|| + sizeof(v) > T$}
+	\STATE $\triangleright$ Launch threads $t1,t2$ which would execute the Lines 16 - 22
+	\STATE $\triangleright$ find fullest bucket referencing $n$
+	\STATE $b_{max} \leftarrow
+		\underset{b_i \in B}{\operatorname{argmax}} ||b_i|| \wedge NodeMap[b_i] = n$
+	\STATE $k^{\mu} \leftarrow \mu(b_{max})$
+	\STATE $n_{dest} \leftarrow n$.migrate($min(b_{max})$, $k^{\mu}$)
+	\STATE $\triangleright$ update structures
+	\STATE $B \leftarrow (b_1, \ldots, b_i, h'(k^{\mu}), b_{i+1}, \ldots,
+	b_p)~|~b_i < h'(k^{\mu}) < b_{i+1}$
+	\STATE $NodeMap[h'(k^{\mu}))] \leftarrow n_{dest}$
+\ELSE
+	\STATE $\triangleright$ $n$ overflows
+	\STATE $\triangleright$ Launch Thread $t3$ if $t1$ and $t2$ are not taking care of $n$ and execute Lines 16-22
+\ENDIF
+
+\end{algorithmic}
+\end{algorithm}
+
+% TODO: Algorithm explanation (see IJNGC)
 
 % section elastic_cache_support (end)
 
