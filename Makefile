@@ -1,4 +1,4 @@
-PDF=pdflatex
+PDF=pdflatex -shell-escape
 BIB=bibtex
 OPEN=open
 

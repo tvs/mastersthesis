@@ -128,6 +128,9 @@ events and allows for the coordinator to plan and accomodate accordingly.
 \section{Cache Node} % (fold)
 \label{sec:Cache_Node}
 % Data storage
+
+\subsection{Indexing}
+\label{sub:cache_indexing}
 Each cache node is, at its most basic level, responsible for only a few tasks.
 Intuitively, as this is the area where the key-value pairs are actually stored,
 each node must implement functionality that allows for \emph{insertion} and
@@ -140,12 +143,94 @@ of indexing scheme impacts both the split and migration time of each node, as
 support for fast range queries allows the system to quickly determine which
 records need to be transferred. Furthermore, the performance of the entire
 cache is dependent upon the speed of record retrieval and the speed at which it
-can determine hits and misses. In Chapter~\ref{chap:Indexing_Strategies}, we
-present background information on three common indexing structures:
-\bptrees, Extendible Hashing, and Bloom Filters. Later, we expand on this
-work to include other storage mediums beyond memory.
+can determine hits and misses.
 
-% Eviction
+In previous works\cite{chiu_ccgrid11,chiu_ijngc11}, we have analyzed three
+different indexing schemes: \bptrees, Extendible Hashing, and Bloom filters. We
+concluded that \bptrees scale well regardless of system parameters, and
+Extendible Hashing, with its constant-time exact-match searches, could
+outperform \bptrees if their parameters are chosen appropriately. However, if
+the cache system is volatile and migration is invoked often, Extendible Hashing
+indexing schemes will result in increasingly poor migration performance. We
+also note that Counting Bloom Filters should generally be avoided as an
+indexing scheme for elastic key-value storage. As a caveat, however, CBF may
+scale well for applications relying on space-efficient structures. We also make
+note of the interesting observation that CBF migration overheads become better
+over time. As a result of this, we chose to employ \bptrees for our purposes
+and detail their operation here.
+
+\subsubsection{\bptrees} % (fold)
+\label{subsub:b_trees}
+B-Trees and \bptrees are used in many of today's systems. The \bptree is a
+multilevel indexing scheme that automatically adjusts the number of levels
+depending upon the file size and stores all of its records in the leaf nodes.
+Each record is stored in ascending order from left to right and each leaf node
+is linked to the next and previous nodes. In this way, its design is
+specifically crafted to accelerate queries over a range of
+values\cite{navathe,ullman}. In terms of retrieval, \bptrees are balanced data
+structures, where all paths from the root to any leaf have the same length
+(similar to binary trees, with approximately log$_2 n$ depth).
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{figures/bplustree.pdf}
+\end{center}
+\caption{\bptree structure}
+\label{fig:bplustree}
+\end{figure}
+
+Structurally, \bptrees are composed as shown in Figure~\ref{fig:bplustree}.
+Internal nodes, those colored beige, act as pointers to other nodes in the
+structure. All keys in the left branch of the key \emph{K} are less than or
+equal to \emph{K}, while all keys to the right are greater than \emph{K}. While
+searching, we compare the search key with the entries in the tree until such a
+point as we reach the leaf node. Leaf nodes, those colored white, contain the
+stored keys and pointers to the physical data location (blue). Additionally, in
+order to assist with range queries, leaf nodes also contain a pointer to the
+next leaf node, in order (orange).
+
+With this sort of structure, we can see that range queries are made quite
+simple and quick. Given a range $[k_{start}, k_{end}]$ we begin by searching to
+find $k_{start}$ then proceed to iterate through the leaves until we find a
+node greater than $k_{end}$. The search then returns the set of data identified
+in that range. Due to this support, we expect the \bptree integration to be
+well suited to elastic cache. Quick access to ranges of data should lead to
+much faster data migration in the event of node additions. Data migration,
+which is composed of a set of key deletions, can again be efficiently managed
+in the same way as a range query is. The \bptree migration algorithm is shown
+in Algorithm~\ref{alg:migrate1}.
+
+\begin{algorithm}[htp]
+\small
+\caption{\label{alg:migrate1}BT\_Migrate($k_{start}$, $k_{end}$)} \begin{algorithmic}[1]
+\STATE $\triangleright$ manipulate B$^+$-tree index and transfer the keys in form of a string, $keys$
+\STATE $end \leftarrow false$
+\STATE $\triangleright$ $L =$ leaf initially containing $k_{start}$ 
+\STATE $L \leftarrow btree$.search($k_{start}$)
+\WHILE{$(\neg end \wedge L \neq NULL)$}
+ \STATE $\triangleright$ each leaf node contains multiple keys
+ \FORALL {$(k,v) \in L$}
+   \IF {$k \le k_{end}$}
+     \STATE $keys$.append($k$, $v$)
+     \STATE $btree$.delete($k$)
+   \ELSE
+     \STATE $end \leftarrow true$
+     \STATE break
+   \ENDIF
+ \ENDFOR
+ \STATE $L \leftarrow L$.next()
+\ENDWHILE
+\STATE return $keys$
+\end{algorithmic}
+\end{algorithm}
+
+% subsubsection bplustree (end)
+
+% subsection Indexing (end)
+
+\subsection{Eviction} % (fold)
+\label{sub:cache_eviction}
+
 As mentioned, each cache node is also given the ability to evict data. As the
 node becomes nearer to full, if the coordinator has not decided to split it
 and migrate data out, it must be able to make room for additional data. As with
@@ -158,7 +243,11 @@ Chapter~\ref{chap:Eviction_Strategies}, we present background information on two
 common indexing structures: First-In First-Out (FIFO), Least Recently Used
 (LRU), in addition to a scoring-based algorithm of our own creation.
 
-% Migration
+% subsection cache_eviction (end)
+
+\subsection{Migration} % (fold)
+\label{sub:cache_migration}
+
 Finally, each cache node is individually responsible for handling the migration
 of data from one instance to the next. Given that the indexing scheme can be
 determined on a per-node basis (e.g.\ one node uses a B$^+$-tree while the
@@ -170,6 +259,8 @@ then connect directly to node $C$ and begin its migration. As mentioned, this
 has implications on the selection of the \emph{indexing strategy}. With
 migrations occurring over a range of keys, being able to swiftly do searches
 over that range becomes very important.
+
+% subsection cache_migration (end)
 
 % section Cache_Node (end)
 
