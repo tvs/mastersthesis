@@ -61,21 +61,21 @@ difficulty of managing data in a highly dynamic environment. In this paper, we
 explore the issues associated with creating and managing an elastic
 \emph{key-value} storage system.
 
-\emph{Auspice}, the product of this exploration, was motivated by challenges in
-accelerating \emph{service-oriented} computations in the cloud. In our earlier
-works, the key-value cache was used to store the intermediate results of web
-services which were then used in the process of completing other computations.
-Similar to our previous example, this type of cache benefits from elasticity as
-periods of intensive querying can be responded to through the self-managed
-expansion of resources.
+The product of this exploration was motivated by challenges in accelerating
+\emph{service-oriented} computations in the cloud. In our earlier works, the
+key-value cache was used to store the intermediate results of web services
+which were then used in the process of completing other computations.  Similar
+to our previous example, this type of cache benefits from elasticity as periods
+of intensive querying can be responded to through the self-managed expansion of
+resources.
 
-During the creation of \emph{Auspice}, we also identified a number of areas for
-improvement. The two primary areas we recognized were in the macro and micro
-levels, that is, the management of the cache as a whole and the management of
-each individual cache node. This research is focused additionally on the micro
-level. In particular, this paper focuses on mechanisms for managing data
-placement within the cache and prioritizing the retrieval of high-value
-elements.
+During the creation of our cooperative cache, we also identified a number of
+areas for improvement. The two primary areas we recognized were in the macro
+and micro levels, that is, the management of the cache as a whole and the
+management of each individual cache node. This research is focused additionally
+on the micro level. In particular, this paper focuses on mechanisms for
+managing data placement within the cache and prioritizing the retrieval of
+high-value elements.
 
 \section{Research Contributions} % (fold)
 \label{sec:Research_Contributions}
@@ -101,9 +101,9 @@ The ultimate goal of this thesis is to describe the various mechanisms
 implemented to improve the performance of each cache node. The following
 chapters provide additional background and the details involved in this
 pursuit. Chapter~\ref{chap:Background} provides background for the creation of
-\emph{Auspice}, our key-value store, as well as information about Amazon Web
-Services (AWS). Chapter~\ref{chap:Indexing_Strategies} includes an analysis of
-three data indexing schemes and the tradeoffs between them.
+our key-value store, as well as information about Amazon Web Services (AWS).
+Chapter~\ref{chap:Hybrid_Cache} covers the implementation of a specialized
+cache node that utilizes S3 as a secondary storage medium.
 Chapter~\ref{chap:Eviction_Strategies} evaluates different data eviction
 strategies and their impact on cache performance in situations where unlimited
 storage is infeasible. Chapter~\ref{chap:Storage_Mediums} establishes a

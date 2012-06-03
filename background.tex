@@ -1,13 +1,13 @@
-In this section we describe the basic architecture of \emph{Auspice}. We
+In this section we describe the basic architecture of our cooperative cache. We
 present background information on AWS resource costs and discuss the tradeoffs
 involved in their utilization.
 
 \section{Elastic Key-Value Cache System} % (fold)
 \label{sec:Elastic_Key-Value_Cache_System}
-\emph{Auspice's} main priority, as with any cache, is to provide fast access to
-the data stored within. This was initially achieved by caching all of the data
-in main memory. With memory being a limited resource, we would then have to
-allocate further instances to handle the overflow.
+Our main priority, as with any cache, is to provide fast access to the data
+stored within. This was initially achieved by caching all of the data in main
+memory. With memory being a limited resource, we would then have to allocate
+further instances to handle the overflow.
 
 \begin{figure}
 \begin{center}
@@ -67,7 +67,7 @@ another).
 \label{fig:hashing}
 \end{figure}
 
-Instead, we implement consistent hashing (CITE - Karger 1997), a mechanism well
+Instead, we implement consistent hashing\cite{karger1}, a mechanism well
 adapted to the highly dynamic nature of our problem. In fact, consistent
 hashing is used within the even more-volatile systems of Peer-to-Peer
 transfers. The circular hash ring that hash buckets are stored in allow for
@@ -101,7 +101,7 @@ load on $A$. For example, the bucket could be placed at $(75 + 8 + r)/2$ and
 the $(k,v)$ pairs hashing into $(75, (75 + 8 + r)/2]$ are migrated into node $C$.
 
 In addition to simply splitting and migrating, the coordinator is also where we
-identified areas for future improvement (CITE - IJNGC2011). From this
+identified areas for future improvement\cite{chiu_ijngc11}. From this
 macro-level control area, we proposed a more intelligent mechanism for
 controlling the overall cache hierarchy. Though this area was developed in
 parallel with the work of this paper and falls outside of its scope, we offer a

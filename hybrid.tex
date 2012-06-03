@@ -11,7 +11,19 @@ While in other versions, the cache grows incrementally without eviction,in this
 variation we use only \emph{one} EC2 node and evict records into S3. We believe
 that this configuration offers an effective means of storing the same quantity
 of keys, with only the slight performance cost of having to query S3. The key
-search function initially queries the EC2 node and upon a miss, searches in S3.
+search function initially queries the EC2 node and upon a miss, searches in
+S3. Additionally, this configuration can also be expanded to grow incrementally
+while still utilizing S3 as storage for evicted records.
+Figure~\ref{fig:hybrid_setup} shows the structure of a service that utilizes
+our cooperative cache over hybrid nodes.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{figures/auspice_setup.pdf}
+\end{center}
+\caption{A service utilizing a cooperative cache consisting of hybrid nodes}
+\label{fig:hybrid_setup}
+\end{figure}
 
 % section hybrid_system (end)
 
@@ -91,7 +103,7 @@ threshold and we can fit the new element in
 \end{algorithmic}
 \end{algorithm}
 
-Algorithm~\ref{alg:hybrid_insert} operates in tandom with
+Algorithm~\ref{alg:hybrid_insert} operates in tandem with
 Algorithm~\ref{alg:hybrid_evict} to determine if the cache node's memory
 contains enough free space to add the newly inserted element and, if not, evict
 data into S3 until it has either dropped under our required threshold or
@@ -115,22 +127,64 @@ structure.
 
 % subsection hybrid_insert (end)
 
-% section Implementation (end)
+\subsection{Search and Delete} % (fold)
+\label{sub:hybrid_search_delete}
+The inclusion of a secondary storage medium necessitates new algorithms for
+managing both {\tt search} and {\tt delete}. The algorithms for doing so are,
+as one might expect, quite simple. We begin by searching through memory for our
+record and, if it is found, we optionally update the eviction queue (\eg in the
+event of a Least Recently Used scheme) before returning the value. If the
+record is not found in memory we then proceed to search S3.
 
+The algorithm for delete operates in similar fashion. We begin by checking
+memory for the key and in the event of a hit, we delete from memory. If the key
+is not contained in memory we check existence in S3 and conditionally delete
+the record. The algorithm concludes by removing the key from the eviction
+queue.
+
+Although there are certain optimizations available for these algorithms as well
+as for {\tt insert}, we do not consider them here. In
+Chapter~\ref{chap:Storage_Mediums} we introduce the concept of a hierarchical
+cache (where data is placed in different storage mediums) and necessitate a
+more complex cache.
+
+% subsection hybrid_search_delete (end)
+
+% section Implementation (end)
 
 \section{Hybrid Cache Evaluation} % (fold)
 \label{sub:hybrid_system_evaluation}
-We built the hybrid cache mentioned in Section~\ref{sec:hybrid_system} and ran
-the following experiments on one {\tt m1.xlarge} node. Using 5 MB unit size, we
-randomly submitted 3000 unique keys over 5000 requests. We also submitted 1000
-requests over 500 unique keys for 25 MB unit size. We measured their miss
-rates, as shown in Figures~\ref{fig:5mb-S3evict} and~\ref{fig:25mb-S3evict}
-respectively. The subgraphs within each figure show the number of records that
-have been evicted into S3. As can be seen in both figures, the hybrid cache
-offers lower miss rates, which results in lower average request times. This
-pattern is more prominent and occurs sooner in Figure~\ref{fig:25mb-S3evict}
-due to a lower key range being used in the experiment. We do not offer the
-same, in-depth cost analysis as in section~\ref{sub:performance_cost_analysis}.
+In these experiments we used a single \emph{large EC2 instance} ({\tt
+m1.xlarge}) from the Amazon Cloud consisting of 7.5 GB of memory, 4 virtual EC2
+cores -- equivalent to a 1.0-1.2 GHz 2007 Opteron or 2007 Xeon Processor each
+-- on a 64 bit platform.  Each instance was loaded with an Ubuntu Linux image
+and a cache server which contains the indexing logic.
+
+In order to test the performance of our eviction strategy and the hybrid cache,
+we constructed our experiment to perform a series of requests over a set of
+unique keys. In order to discover the impact of eviction we perform more
+requests than there are unique keys. We also place a limit on the number of
+records allowed to be stored in memory so that eviction will begin placing
+records in S3. From a practical standpoint this has the same effect as
+operating on an instance with a smaller allocation of memory.
+
+We ran the following experiments: using 5 MB unit sizes, we randomly submitted
+5000 queries over a set of 3000 unique keys (14.5 GB) and with memory limited
+to storing only 2000 of those keys at most (9.8 GB). We also performed an
+experiment utilizing a unit size of 25 MB, 1000 requests and 500 unique keys
+(12.2 GB) with memory limited to 200 such keys (4.9 GB). In both experiments
+our threshold was set to 80\%, meaning that eviction began after 1600 (7.8 GB)
+and 160 (3.9 GB) keys respectively. Each of these unit sizes were run over two
+different forms of cache: our hybrid cache with eviction into S3 and a cache
+that simply evicts data permanently.
+
+We measured the miss rates for both the 5 MB and 25 MB experiments, as shown in
+Figures~\ref{fig:5mb-S3evict} and~\ref{fig:25mb-S3evict} respectively. The
+subgraphs in each figure show the number of records that have been evicted into
+S3. As shown in both figures, the hybrid cache offers lower miss rates, which
+result in lower average requests times. This pattern is more prominent and
+occurs sooner in Figure~\ref{fig:25mb-S3evict} due to a lower key range being
+used in the experiment.
 
 \begin{figure}[htp]
 \begin{center}
