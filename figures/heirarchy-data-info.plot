@@ -211,13 +211,13 @@
 			</array>
 		</dict>
 		<string>D</string>
-		<string>%</string>
+		<string>function</string>
 		<string>E</string>
 		<string>A</string>
 		<string>B</string>
-		<string>C</string>
 		<string>weight</string>
-		<string>function</string>
+		<string>%</string>
+		<string>C</string>
 		<string></string>
 		<dict>
 			<key>$classes</key>
@@ -2185,7 +2185,7 @@
 			<key>plotysticks</key>
 			<false/>
 			<key>show</key>
-			<false/>
+			<true/>
 			<key>source</key>
 			<dict>
 				<key>CF$UID</key>
@@ -2210,12 +2210,12 @@
 			<integer>30</integer>
 		</dict>
 		<data>
-		AAAAAAAAAAAAAAAAAADwPwAAAAAAAJBAAAAAAAAAMEEAAAAAAABkQQAAAAAA
+		AAAAAAAAkEAAAAAAAADEQAAAAAAAAPlAAAAAAAAAMEEAAAAAAABkQQAAAAAA
 		AJlB
 		</data>
 		<data>
-		AAAAAAAAAAAAAAAAAAAAAFnNYHl90+0/Zc+LAJSssD+2ztIoN2RmPx6CvZzs
-		eRE/
+		AAAAAAAAAAA8BHs52fPCP713wc3P+uE/MVICdd1uzD9lz4sAlKywP7bO0ig3
+		ZGY/
 		</data>
 		<dict>
 			<key>$class</key>
@@ -2224,7 +2224,7 @@
 				<integer>3</integer>
 			</dict>
 			<key>NS.string</key>
-			<string>/Users/trhall/grad/AuspiceRuby/bin/stuff.csv</string>
+			<string>/Users/trhall/grad/thesis/results/stuff.csv</string>
 		</dict>
 		<dict>
 			<key>$class</key>
@@ -2233,7 +2233,7 @@
 				<integer>3</integer>
 			</dict>
 			<key>NS.string</key>
-			<string>PDF-Existence</string>
+			<string>Likelihood of File Existence</string>
 		</dict>
 		<dict>
 			<key>$class</key>
@@ -2735,7 +2735,7 @@
 			<key>plotysticks</key>
 			<false/>
 			<key>show</key>
-			<true/>
+			<false/>
 			<key>source</key>
 			<dict>
 				<key>CF$UID</key>
@@ -2760,12 +2760,12 @@
 			<integer>30</integer>
 		</dict>
 		<data>
-		AAAAAAAAAAAAAAAAAADwPwAAAAAAAJBAAAAAAAAAMEEAAAAAAABkQQAAAAAA
+		AAAAAAAAkEAAAAAAAADEQAAAAAAAAPlAAAAAAAAAMEEAAAAAAABkQQAAAAAA
 		AJlB
 		</data>
 		<data>
-		AAAAAAAAAAAAAAAAAAAAAJE1xp2Hm+8/sgHdv+yfhz/Pih6jh4tEP+mj2DGq
-		uRo/
+		AAAAAAAAAAARtIsf8mnMP4Ufd0qY0dg/lXFP4X0w2D+yAd2/7J+HP8+KHqOH
+		i0Q/
 		</data>
 		<dict>
 			<key>$class</key>
@@ -2774,7 +2774,7 @@
 				<integer>3</integer>
 			</dict>
 			<key>NS.string</key>
-			<string>/Users/trhall/grad/AuspiceRuby/bin/stuff.csv</string>
+			<string>/Users/trhall/grad/thesis/results/stuff.csv</string>
 		</dict>
 		<dict>
 			<key>$class</key>
@@ -2783,7 +2783,7 @@
 				<integer>3</integer>
 			</dict>
 			<key>NS.string</key>
-			<string>PDF-Requests</string>
+			<string>Query Likelihood</string>
 		</dict>
 		<dict>
 			<key>$class</key>
@@ -2851,7 +2851,7 @@
 			<integer>1</integer>
 			<key>NSRGB</key>
 			<data>
-			MC4zNjczMDUzMDg2IDAuODA0MzQ3ODEzMSAwLjc5NDg2NDM1NjUA
+			MSAwLjU2MTA3Mzg5OTMgMC4wNTEyMjgzNDQ0NAA=
 			</data>
 		</dict>
 		<dict>
@@ -3386,7 +3386,7 @@
 				<integer>3</integer>
 			</dict>
 			<key>NS.string</key>
-			<string>File Requests</string>
+			<string>File Size</string>
 		</dict>
 		<dict>
 			<key>$class</key>
@@ -3843,7 +3843,7 @@
 				</dict>
 				<dict>
 					<key>CF$UID</key>
-					<integer>152</integer>
+					<integer>151</integer>
 				</dict>
 			</array>
 		</dict>
@@ -3856,15 +3856,14 @@
 		<string>1e+08</string>
 		<string>10</string>
 		<string>100</string>
-		<string> </string>
+		<string>10 KB</string>
 		<string>1 KB</string>
 		<string>10 MB</string>
-		<string> </string>
+		<string>100 KB</string>
 		<string>1 B</string>
 		<string>1 MB</string>
 		<string>1 GB</string>
 		<string> </string>
-		<string> </string>
 		<dict>
 			<key>$class</key>
 			<dict>
@@ -3872,7 +3871,7 @@
 				<integer>3</integer>
 			</dict>
 			<key>NS.string</key>
-			<string>PDF</string>
+			<string>PDF of File Existence Likelihood</string>
 		</dict>
 		<dict>
 			<key>$class</key>
@@ -3888,7 +3887,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>155</integer>
+				<integer>154</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -3962,7 +3961,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>160</integer>
+				<integer>159</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4009,7 +4008,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>162</integer>
+				<integer>161</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4056,7 +4055,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>164</integer>
+				<integer>163</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4103,7 +4102,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>166</integer>
+				<integer>165</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4150,7 +4149,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>168</integer>
+				<integer>167</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4253,7 +4252,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>176</integer>
+				<integer>175</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4327,7 +4326,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>181</integer>
+				<integer>180</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4374,7 +4373,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>183</integer>
+				<integer>182</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4421,7 +4420,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>185</integer>
+				<integer>184</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4468,7 +4467,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>187</integer>
+				<integer>186</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4515,7 +4514,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>189</integer>
+				<integer>188</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4618,7 +4617,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>197</integer>
+				<integer>196</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4692,7 +4691,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>202</integer>
+				<integer>201</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4739,7 +4738,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>204</integer>
+				<integer>203</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4786,7 +4785,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>206</integer>
+				<integer>205</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4833,7 +4832,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>208</integer>
+				<integer>207</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4880,7 +4879,7 @@
 			<key>NSDragTypes</key>
 			<dict>
 				<key>CF$UID</key>
-				<integer>210</integer>
+				<integer>209</integer>
 			</dict>
 			<key>NSEnabled</key>
 			<true/>
@@ -4971,17 +4970,17 @@
 		<key>alabel1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>173</integer>
+			<integer>172</integer>
 		</dict>
 		<key>alabel2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>194</integer>
+			<integer>193</integer>
 		</dict>
 		<key>alabel3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>215</integer>
+			<integer>214</integer>
 		</dict>
 		<key>align0</key>
 		<integer>2</integer>
@@ -5031,17 +5030,17 @@
 		<key>axistext1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>153</integer>
+			<integer>152</integer>
 		</dict>
 		<key>axistext2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>174</integer>
+			<integer>173</integer>
 		</dict>
 		<key>axistext3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>195</integer>
+			<integer>194</integer>
 		</dict>
 		<key>axistextcolor0</key>
 		<dict>
@@ -5051,17 +5050,17 @@
 		<key>axistextcolor1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>154</integer>
+			<integer>153</integer>
 		</dict>
 		<key>axistextcolor2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>175</integer>
+			<integer>174</integer>
 		</dict>
 		<key>axistextcolor3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>196</integer>
+			<integer>195</integer>
 		</dict>
 		<key>axistimeformat0</key>
 		<dict>
@@ -5071,17 +5070,17 @@
 		<key>axistimeformat1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>156</integer>
+			<integer>155</integer>
 		</dict>
 		<key>axistimeformat2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>177</integer>
+			<integer>176</integer>
 		</dict>
 		<key>axistimeformat3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>198</integer>
+			<integer>197</integer>
 		</dict>
 		<key>backgroundcolor</key>
 		<dict>
@@ -5102,7 +5101,7 @@
 		<key>dp3</key>
 		<integer>2</integer>
 		<key>dpauto0</key>
-		<true/>
+		<false/>
 		<key>dpauto1</key>
 		<true/>
 		<key>dpauto2</key>
@@ -5176,9 +5175,9 @@
 			<integer>97</integer>
 		</dict>
 		<key>grid0</key>
-		<false/>
+		<true/>
 		<key>grid1</key>
-		<false/>
+		<true/>
 		<key>grid2</key>
 		<false/>
 		<key>grid3</key>
@@ -5191,17 +5190,17 @@
 		<key>gridcolor1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>161</integer>
+			<integer>160</integer>
 		</dict>
 		<key>gridcolor2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>182</integer>
+			<integer>181</integer>
 		</dict>
 		<key>gridcolor3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>203</integer>
+			<integer>202</integer>
 		</dict>
 		<key>gridfront0</key>
 		<true/>
@@ -5281,17 +5280,17 @@
 		<key>mgridcolor1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>165</integer>
+			<integer>164</integer>
 		</dict>
 		<key>mgridcolor2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>186</integer>
+			<integer>185</integer>
 		</dict>
 		<key>mgridcolor3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>207</integer>
+			<integer>206</integer>
 		</dict>
 		<key>mgridfront0</key>
 		<true/>
@@ -5325,17 +5324,17 @@
 		<key>mtickcolor1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>163</integer>
+			<integer>162</integer>
 		</dict>
 		<key>mtickcolor2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>184</integer>
+			<integer>183</integer>
 		</dict>
 		<key>mtickcolor3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>205</integer>
+			<integer>204</integer>
 		</dict>
 		<key>mticklength0</key>
 		<real>5</real>
@@ -5437,17 +5436,17 @@
 		<key>scaleexpr1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>157</integer>
+			<integer>156</integer>
 		</dict>
 		<key>scaleexpr2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>178</integer>
+			<integer>177</integer>
 		</dict>
 		<key>scaleexpr3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>199</integer>
+			<integer>198</integer>
 		</dict>
 		<key>scalend0</key>
 		<dict>
@@ -5457,17 +5456,17 @@
 		<key>scalend1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>170</integer>
+			<integer>169</integer>
 		</dict>
 		<key>scalend2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>191</integer>
+			<integer>190</integer>
 		</dict>
 		<key>scalend3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>212</integer>
+			<integer>211</integer>
 		</dict>
 		<key>scalminticks0</key>
 		<dict>
@@ -5477,17 +5476,17 @@
 		<key>scalminticks1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>172</integer>
+			<integer>171</integer>
 		</dict>
 		<key>scalminticks2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>193</integer>
+			<integer>192</integer>
 		</dict>
 		<key>scalminticks3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>214</integer>
+			<integer>213</integer>
 		</dict>
 		<key>scalspace0</key>
 		<dict>
@@ -5497,17 +5496,17 @@
 		<key>scalspace1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>171</integer>
+			<integer>170</integer>
 		</dict>
 		<key>scalspace2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>192</integer>
+			<integer>191</integer>
 		</dict>
 		<key>scalspace3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>213</integer>
+			<integer>212</integer>
 		</dict>
 		<key>scalstart0</key>
 		<dict>
@@ -5517,17 +5516,17 @@
 		<key>scalstart1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>169</integer>
+			<integer>168</integer>
 		</dict>
 		<key>scalstart2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>190</integer>
+			<integer>189</integer>
 		</dict>
 		<key>scalstart3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>211</integer>
+			<integer>210</integer>
 		</dict>
 		<key>smalllog0</key>
 		<false/>
@@ -5588,17 +5587,17 @@
 		<key>tickcolor1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>159</integer>
+			<integer>158</integer>
 		</dict>
 		<key>tickcolor2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>180</integer>
+			<integer>179</integer>
 		</dict>
 		<key>tickcolor3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>201</integer>
+			<integer>200</integer>
 		</dict>
 		<key>ticklength0</key>
 		<real>10</real>
@@ -5648,17 +5647,17 @@
 		<key>trigger1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>158</integer>
+			<integer>157</integer>
 		</dict>
 		<key>trigger2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>179</integer>
+			<integer>178</integer>
 		</dict>
 		<key>trigger3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>200</integer>
+			<integer>199</integer>
 		</dict>
 		<key>updateinterval</key>
 		<integer>30</integer>
@@ -5669,23 +5668,23 @@
 		<key>winw</key>
 		<integer>680</integer>
 		<key>winx</key>
-		<integer>461</integer>
+		<integer>512</integer>
 		<key>winy</key>
-		<integer>349</integer>
+		<integer>350</integer>
 		<key>xmax1</key>
 		<real>209715200</real>
 		<key>xmax2</key>
 		<real>1.0338983050847457</real>
 		<key>xmin1</key>
-		<real>0.20000000000000001</real>
+		<real>512</real>
 		<key>xmin2</key>
 		<real>-0.033898305084745763</real>
 		<key>ymax1</key>
-		<real>1.038388671245734</real>
+		<real>0.5906803418803418</real>
 		<key>ymax2</key>
 		<real>1.0512820512820513</real>
 		<key>ymin1</key>
-		<real>-0.050653105914426046</real>
+		<real>-0.02881367521367521</real>
 		<key>ymin2</key>
 		<real>-0.05128205128205128</real>
 		<key>zerocolor0</key>
@@ -5696,17 +5695,17 @@
 		<key>zerocolor1</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>167</integer>
+			<integer>166</integer>
 		</dict>
 		<key>zerocolor2</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>188</integer>
+			<integer>187</integer>
 		</dict>
 		<key>zerocolor3</key>
 		<dict>
 			<key>CF$UID</key>
-			<integer>209</integer>
+			<integer>208</integer>
 		</dict>
 		<key>zeroline0</key>
 		<false/>

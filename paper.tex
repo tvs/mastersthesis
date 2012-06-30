@@ -1,4 +1,4 @@
-\documentclass[letterpaper,11pt]{report}
+\documentclass[letterpaper,12pt]{report}
 \input{studentDefined}
 
 %%%%% Packages
@@ -16,6 +16,25 @@
 \usepackage[pdftex]{graphicx}
 \usepackage{times} %mjpp
 \usepackage{rotating}
+\usepackage{hyperref}
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={\covertitle},    % title
+    pdfauthor={\paperauthor},     % author
+    pdfcreator={\paperauthor},   % creator of the document
+    pdfnewwindow=true,      % links in new window
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=black,          % color of internal links
+    citecolor=black,        % color of links to bibliography
+    filecolor=black,      % color of file links
+    urlcolor=black           % color of external links
+}
+
 \pdfpagewidth 8.5in
 \pdfpageheight 11in 
 \setlength\topmargin{0in}
@@ -80,22 +99,23 @@
 
 %\begin{center}TABLE OF CONTENTS\end{center}
     \tableofcontents
+    \addcontentsline{toc}{chapter}{TABLE OF CONTENTS}
 
     \pagebreak
-    \addcontentsline{toc}{chapter}{LIST OF TABLES}
     \listoftables
+    \addcontentsline{toc}{chapter}{LIST OF TABLES}
 
     \newpage
-    \addcontentsline{toc}{chapter}{LIST OF FIGURES}
     \listoffigures
+    \addcontentsline{toc}{chapter}{LIST OF FIGURES}
 
 
 % adds an entry to the table of contents but subentries are not indented
 %    \addtocontents{toc}{\protect\par\noindent \\ \textbf{CHAPTER} \protect\par}
 
-    \newpage
-    \chapter*{Dedication}
-        \input{dedication}
+    %\newpage
+    %\chapter*{Dedication}
+        %\input{dedication}
     
     \newpage
     \pagenumbering{arabic}
@@ -108,7 +128,7 @@
     \singlespacing
     % \nocite{*} % TODO Uncomment this to only display cited values
     \bibliographystyle{IEEEtran}
-        \addcontentsline{toc}{chapter}{Bibliography}
         %\bibliography{References}
          \bibliography{\myBibs}
+        \addcontentsline{toc}{chapter}{Bibliography}
 \end{document}

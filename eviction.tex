@@ -1,5 +1,5 @@
 The hybrid system outlined in Chapter~\ref{chap:Hybrid_Cache} introduces the
-concept of data eviction. While in previous implementaions the cache grows
+concept of data eviction. While in previous implementations the cache grows
 incrementally without eviction, here we explore the potential of a cache that
 removes data as it approaches its maximum capacity. This implementation can be
 used individually or as part of a cooperative cache and provides a tuning
@@ -59,7 +59,7 @@ expensive algorithm.
 \STATE $\triangleright$ Obtain the global eviction queue $lru$
 
 \STATE $\triangleright$ Identify the index at which the key resides
-\IF{$index\ =\ lru$.index($key$)}
+\IF{$index\ \leftarrow lru$.index($key$)}
   \STATE $lru$.delete\_at($index$)
 \ENDIF
 \STATE $lru$.push($key$)
@@ -73,7 +73,7 @@ expensive algorithm.
 \STATE $\triangleright$ Obtain the global eviction queue $lru$
 
 \STATE $\triangleright$ Identify the index at which the key resides
-\IF{$index\ =\ lru$.index($key$)}
+\IF{$index\ \leftarrow lru$.index($key$)}
   \STATE $lru$.delete\_at($index$)
   \STATE $lru$.push($key$)
 \ENDIF
@@ -124,11 +124,12 @@ the key. If the server can retrieve that data, it indicates a successful search
 and proceeds to send it to the experiment broker. This time is considered a
 successful hit. If the server is \emph{unable} to retrieve said data, it
 indicates a cache miss and a penalty of 75 seconds is applied to the total
-running time to simulate the amount of time it would take to compute such data.
-The experiment broker then proceeds to insert the data into the cache, at which
-point the cache may decide to evict. In every eviction, the cache evicts 10\% 
-of the total number of keys it may contain (i.e. 200 keys are evicted with a
-threshold size of 2000).
+running time to simulate the amount of time it would take to compute such data
+(recall from Figure~\ref{fig:architecture} that a cache miss results in service
+execution). The experiment broker then proceeds to insert the data into the
+cache, at which point the cache may decide to evict. In every eviction, the
+cache evicts 10\% of the total number of keys it may contain (i.e. 200 keys are
+evicted with a threshold size of 2000).
 
 \begin{figure}[htp]
 \begin{center}
