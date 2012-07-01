@@ -1,0 +1,73 @@
+\section{Conclusion} % (fold)
+\label{sec:conclusion}
+Back in Chapter~\ref{chap:Introduction} we motivated the development of our
+research on the concept of \emph{elasticity}. The idea that a system need not
+be defined rigidly in terms of its computational and storage capacity.  That
+Amazon's Elastic Compute Cloud (EC2) and other \emph{Infrastructure as a
+Service} providers open up the possibility for soft systems that scale with the
+demand of their workload. We began with a simple example of a microblogging
+webservice that we called \emph{Aflutter}, and we described the ways in which
+this elasticity can help to smooth out spikes in service demand without
+overprovisioning their computational backbone.
+
+Since then, we have introduced and explored the performance implications
+inherent in a cloud-based \emph{elastic cache} for both computational and
+data-intensive applications. In previous
+works\cite{chiu_ccgrid11,chiu_ijngc11}, we investigated different options for
+indexing schemes in our individual cache nodes and settled on utilizing
+\bptrees in the general case. In this paper, we continued our studies with the
+elastic cache by adding new features. In Chapter~\ref{chap:Hybrid_Cache} we
+implemented a new form of cache node, expanding upon the previous design,
+adding a layer of persistent storage. This allowed us to create a form of
+elastic cache that did not always have to grow. The system was allowed to evict
+data from memory into a layer of persistent storage, reducing the rate at which
+the elastic cache grew in number of nodes. As a side benefit, our node
+demonstrated higher hit rates and lower average request times.
+
+By allowing our nodes to evict data from memory into the persistent layer, we
+introduced two concepts deserving of scrutiny: \emph{eviction schemes} and the
+notion of a \emph{storage hierarchy}. In Chapter~\ref{chap:Eviction_Strategies}
+we explored the former, contrasting the performances of both Least Recently
+Used (LRU) and First-In First-Out (FIFO) strategies. There our results were
+somewhat inconclusive, showing that the performance differences between LRU and
+FIFO were not large if such a thing even existed at all. We did note a slight
+preference for LRU in the general case and especially early on into the cache's
+lifespan. For this reason we opted to utilize the LRU queue as our baseline
+eviction scheme.
+
+Finally, Chapter~\ref{chap:Storage_Mediums} explored the creation of a
+\emph{storage hierarchy}, utilizing the full range of storage capacity. As a
+side effect, we also continued our investigation of \emph{eviction schemes}.
+This mutated, as a result of the storage hierarchy, becoming \emph{data
+placement schemes}. These determine which layer of our memory-disk-cloud
+hierarchy that each key-value pair is to be stored on. Here we created a
+\emph{Cost Aware} (CA) placement strategy that resulted in a much larger number
+of hits-in-memory over the baseline LRU strategy. Subsequently, average response
+time improved yet again.
+
+% section conclusion (end)
+
+\section{Future Work} % (fold)
+\label{sec:future_work}
+Truthfully, we have only scratched the surface of what is possible in an
+elastic cache. In our creation of a Cost Aware data placement strategy we
+recognized many areas for improvement and further study. From the perspective
+of the scoring algorithm alone, there is opportunity for the creation of a much
+more nuanced function. While we pulled inspiration from two common ranking
+algorithms in information retrieval\cite{tfidf,bm25}, there is an exceptionally
+large amount of research in the field that could be further adapted to this
+purpose.
+
+Additionally, the mechanisms by which we handle the rearrangement and rescoring
+of data are deserving of greater inspection.
+Algorithm~\ref{alg:ca_data_placement} is a very straight forward and simple
+approach to rearranging our data. An approach that manages this in a more
+elegant and time-sensitive manner would almost certainly be necessary when
+workloads are so intense as to stress the limits of the cache.
+
+Finally, there is much interest in exploring a comparison between our elastic
+cache and ones that already exist. For example, running benchmarks against
+Amazon's ElastiCache\cite{amazonElastiCache} would be an solid test of our
+design and implementation.
+
+% section future_work (end)
