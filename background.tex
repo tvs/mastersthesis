@@ -18,11 +18,11 @@ further instances to handle the overflow.
 \end{figure}
 
 Our system is composed from a number of Cloud nodes including a
-\emph{Coordinator node} and a set of independent \emph{Cache nodes} indexed by
+\emph{Coordinator Node} and a set of independent \emph{Cache Nodes} indexed by
 consistent hashing as seen in Figure~\ref{fig:architecture}. The coordinator is
 in charge of several different roles:
 \begin{itemize}
-	\item Interfacing with the users through a simple key-value API.
+  \item Interfacing with the users through a simple \emph{key-value} API.
 	\item Determining which cache node might contain the data and routing the
 		query to it.
 	\item Monitoring the capacity of nodes and determining when to allocate a new
@@ -36,12 +36,12 @@ in charge of several different roles:
 % Request handling
 Users interact directly with the coordinator, performing queries in a simple
 and straightforward manner. Within our system, this is done as a simple
-key-value API, however more complex APIs are conceivable for different domains.
-When receiving a request, the coordinator then maps the query to one of the
-cache nodes it manages and proceeds to redirect the query there. In the event
-of a cache hit, the coordinator receives the data and redirects it to the user.
-On a miss, the coordinator is then in charge of retrieving the data that the
-user requested. Depending on the domain of application, this can entail
+\emph{key-value} API, however more complex APIs are conceivable for different
+domains.  When receiving a request, the coordinator then maps the query to one
+of the cache nodes it manages and proceeds to redirect the query there. In the
+event of a cache hit, the coordinator receives the data and redirects it to the
+user.  On a miss, the coordinator is then in charge of retrieving the data that
+the user requested. Depending on the domain of application, this can entail
 different things. For example, the coordinator could be expected to go and
 fetch a web page from the primary server, or it may be expected to schedule and
 invoke a service application. Once the results have been retrieved, the
@@ -67,13 +67,13 @@ another).
 \label{fig:hashing}
 \end{figure}
 
-Instead, we implement consistent hashing\cite{karger1}, a mechanism well
+Instead, we implement \emph{Consistent Hashing}\cite{karger1}, a mechanism well
 adapted to the highly dynamic nature of our problem. In fact, consistent
-hashing is used within the even more-volatile systems of Peer-to-Peer
+hashing is used within the even more-volatile systems of Peer-to-Peer (P2P)
 transfers. The circular hash ring that hash buckets are stored in allow for
 easy splitting and rehashing of each node. Each node being determined by the
-clockwise-successor of $key mod r$ means that the hash does not need to be
-reconstructed from scratch each and every added node.
+clockwise-successor of $key\ \textrm{mod}\ r$ means that the hash does not need to be
+reconstructed from scratch for each and every added node.
 
 As an example, consider Figure~\ref{fig:hashing}, which depicts a consistent
 hashing system composed of two nodes, $A$ and $B$. The circular hash range
@@ -81,7 +81,7 @@ rotates between $0$ and $r-1$, and consists of several buckets placed randomly
 or strategically along the ring. Each bucket stores a pointer to a physical
 storage node. An additional static hash function then maps key-value pairs
 $(k,v)$ onto the hash ring. For example, a function that determines the
-clockwise-successor for some $k \textrm{mod} r$ would begin by hashing to some
+clockwise-successor for some $k\ \textrm{mod}\ r$ would begin by hashing to some
 value on the hash ring and then finding the nearest succeeding bucket in
 clockwise fashion. To continue the example in the figure: a $(k,v)$ pair
 hashing onto 35 would follow the ring to node $A$ as referenced by bucket 75.
@@ -107,16 +107,16 @@ controlling the overall cache hierarchy. Though this area was developed in
 parallel with the work of this paper and falls outside of its scope, we offer a
 high level overview of these mechanisms.
 
-At the macro level, the cache coordinator is concerned with managing the size
-of each tier in the hierarchy and its associated costs. Users have the option
-to input any of the following:
+At the macro level, the \emph{Cache Coordinator} is concerned with managing the
+size of each tier in the hierarchy and its associated costs. Users have the
+option to input any of the following:
 \begin{inparaenum}[(1)]
   \item a cost constraint parameter $C$,
   \item a cost-priority parameter $P_c, (0 < P_c < 1)$ and
   \item a list of Cloud resource usage costs.
 \end{inparaenum}
 The objective of the coordinator is then to maximize cache performance given
-these constratings. The cost-priority parameter allows users to configure the
+these constratints. The cost-priority parameter allows users to configure the
 importance of performance against cost. Additionally, the macro level is
 responsible for planning the capacity and using an Artificial Neural Network
 (ANN), intelligently predicts the underlying cache nodes' memory and disk loads
@@ -194,7 +194,7 @@ simple and quick. Given a range $[k_{start}, k_{end}]$ we begin by searching to
 find $k_{start}$ then proceed to iterate through the leaves until we find a
 node greater than $k_{end}$. The search then returns the set of data identified
 in that range. Due to this support, we expect the \bptree integration to be
-well suited to elastic cache. Quick access to ranges of data should lead to
+well suited to an elastic cache. Quick access to ranges of data should lead to
 much faster data migration in the event of node additions. Data migration,
 which is composed of a set of key deletions, can again be efficiently managed
 in the same way as a range query is. The \bptree migration algorithm is shown
@@ -239,9 +239,10 @@ application-specific. Choices in eviction strategy are reflected in the hit-
 and miss-rates of the cache, which further dictate the overall performance of
 the system. As hinted at by Figure~\ref{fig:architecture}, cache misses lead to
 the execution of, often computationally and time-expensive, services. In
-Chapter~\ref{chap:Eviction_Strategies}, we present background information on two
-common indexing structures: First-In First-Out (FIFO), Least Recently Used
-(LRU), in addition to a scoring-based algorithm of our own creation.
+Chapter~\ref{chap:Eviction_Strategies}, we present background information on
+two common indexing structures: First-In First-Out (FIFO), Least Recently Used
+(LRU), and in Chapter~\ref{chap:Storage_Mediums} we detail a scoring-based
+algorithm of our own creation.
 
 % subsection cache_eviction (end)
 
@@ -266,12 +267,13 @@ over that range becomes very important.
 
 \section{Amazon AWS} % (fold)
 \label{sec:Amazon_AWS}
-Amazon's Web Services (AWS) are composed of a wide range of tools for cloud
-computing. For the purposes of our cache, we make heavy usage of the Elastic
-Compute Cloud (EC2) service. Within EC2, nodes (\emph{instances}) are virtual
-machines that can launch snapshots (\emph{images}) of various system
-configurations. These snapshots can be loaded onto a number of different
-\emph{instance types} of varying capabilities and costs.
+\emph{Amazon's Web Services} (AWS) are composed of a wide range of tools for
+cloud computing. For the purposes of our cache, we make heavy usage of the
+\emph{Elastic Compute Cloud} (EC2) service. Within EC2, nodes
+(\emph{instances}) are virtual machines that can launch snapshots
+(\emph{images}) of various system configurations. These snapshots can be loaded
+onto a number of different \emph{instance types} of varying capabilities and
+costs.
 
 For example, a small EC2 instance ({\tt m1.small}) according to
 AWS\cite{amazonEC2InstanceTypes} at the time of writing, contains $1.7$ GB of
@@ -296,7 +298,7 @@ following claim\cite{amazonEC2InstanceTypes}:
   you may want to consider instances with \emph{high} I/O performance.
 \end{quote}
 
-Another instance type we look at, the Extra Large Instance ({\tt m1.xlarge}),
+Another instance type we look at, the Extra Large instance ({\tt m1.xlarge}),
 consists of $15$ GB of memory, $4$ virtual cores with $2$ EC2 Compute Units
 each, $1,690$ GB of disk space, \emph{high} I/O performance, and can only be
 run on a $64$-bit platform. The costs (USD) of running these compute instances
@@ -371,7 +373,7 @@ file itself. Though objects are limited to a maximum of $5$ GB in size, the
 total number of objects that can be stored in S3 is unlimited. The S3
 architecture has also been designed to be both highly reliable and available.
 
-The second option, Elastic Block Storage (EBS) works in tandem with EC2
+The second option, \emph{Elastic Block Storage} (EBS) works in tandem with EC2
 instances. The EBS service provides a persistent disk space that can be mounted
 from within a running EC2 instance. Though the size of an individual EBS volume
 is limited to $1$ TB and can only be attached to a single instance at a time,
@@ -419,18 +421,18 @@ data size.
 In both the memory-based and disk-based solutions, there is no accounting for
 data persistence. Put simply: if a node fails, is shut down, or is otherwise
 removed from the cache, any data stored on it is considered to be lost. Even if
-the data is stored on ``disk,'' when the Cloud provider reclaims the resources
+the data is stored on ``disk,'' when the cloud provider reclaims the resources
 for that cache node, the data stored within is wiped clean so that the resource
 may be used again. In addition to recovering from node failure, it can be
 beneficial to stop and restart cache nodes during peak/non-peak times as a
-mechanism for saving usage costs, and so we introduce a third tradeoff option
+mechanism for saving usage costs, and so we introduce a third trade-off option
 that allows for persistence.
 
 The most simple persistence method is to directly utilize S3 to store cached
 data. This is convenient for the application developer as we eliminate the
 need for additional indexing logic, using S3's simple API instead, in addition
 to being very inexpensive. Additionally, because S3 is independent from
-Amazon's EC2 system, we can store data without having to allocation additional
+Amazon's EC2 system, we can store data without having to allocate additional
 instances for storage. Due to the reliability and availability guarantees of
 S3, however, the storage architecture is provided in such a robust fashion,
 with support for replication and consistency, that it will likely impact
@@ -443,7 +445,7 @@ system provides another means of data persistence. One primary difference
 between S3 and EBS is that EBS volumes are inherently less accessible. In
 contrast to S3, EBS volumes do not provide unlimited storage, and thus their
 size must be predefined by users before being mounted onto an EC2 instance.
-However, because these volumes are mounted to the instance, this suggessts the
+However, because these volumes are mounted to the instance, this suggests the
 potential for higher throughput than S3, where communications occur through
 high-level SOAP/REST protocols transmitted over HTTP.\ From a cost analysis
 standpoint, EBS invokes additional storage and request overhead to the

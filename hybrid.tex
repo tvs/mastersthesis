@@ -7,13 +7,13 @@ S3 to store cached data. We believe, however, that there is more benefit than
 just persistence. For the purposes of cost effectiveness, we posit that it is
 useful to create a hybrid cache.
 
-While in other versions, the cache grows incrementally without eviction,in this
-variation we use only \emph{one} EC2 node and evict records into S3. We believe
-that this configuration offers an effective means of storing the same quantity
-of keys, with only the slight performance cost of having to query S3. The key
-search function initially queries the EC2 node and upon a miss, searches in
-S3. Additionally, this configuration can also be expanded to grow incrementally
-while still utilizing S3 as storage for evicted records.
+While in other versions, the cache grows incrementally without eviction, in
+this variation we use only \emph{one} EC2 node and evict records into S3. We
+believe that this configuration offers an effective means of storing the same
+quantity of keys, with only the slight performance cost of having to query S3.
+The key search function initially queries the EC2 node and upon a miss,
+searches in S3. Additionally, this configuration can also be expanded to grow
+incrementally while still utilizing S3 as storage for evicted records.
 Figure~\ref{fig:hybrid_setup} shows the structure of a service that utilizes
 our cooperative cache over hybrid nodes.
 
@@ -40,11 +40,11 @@ as long as a node's S3 broker is capable of utilizing a specific bucket.
 
 \subsection{Implementation Redesign} % (fold)
 \label{sec:hybrid_redesign}
-Due to previous works\cite{chiu_ccgrid11,chiu_ijngc11}, our hybrid cache system
+Due to previous works\cite{chiu_ijngc11,chiu_ccgrid11}, our hybrid cache system
 was initially implemented in Java. During initial testing, however, we
 identified a number of implementation issues that prompted a total redesign. In
 order to do so and because of the implementer's greater familiarity with the
-language, the redesign was done in Ruby and experiments run on MRI Ruby
+language, the redesign was done in Ruby and experiments are run on MRI Ruby
 1.9.2p180. Although a redesign became necessary, the implementation still
 follows that which is outlined in Chapter~\ref{chap:Background}.
 
@@ -53,7 +53,7 @@ follows that which is outlined in Chapter~\ref{chap:Background}.
 \subsection{Insert} % (fold)
 \label{sub:hybrid_insert}
 As mentioned, the hybrid cache now evicts records from its main-memory storage.
-To accomodate this we now must take into account some method of eviction. For
+To accommodate this we now must take into account some method of eviction. For
 now we will consider only the most simple case of a First-In First-Out (FIFO)
 queue. Further eviction methods will be covered in
 Chapter~\ref{chap:Eviction_Strategies}.
@@ -64,7 +64,7 @@ into the indexing scheme, we now need to keep an additional queue for the
 purposes of eviction. Further, we must track the ``fullness'' of our indexing
 scheme so that we may evict into S3 as we near our thresholds.
 Algorithms~\ref{alg:hybrid_insert}-\ref{alg:hybrid_evict} detail this process.
-For the sake of simplicty, we refer to the indexing scheme under the variable
+For the sake of simplicity, we refer to the indexing scheme under the variable
 $memory$ as this algorithm operates independently of its details.
 
 \begin{algorithm}[htp]
@@ -154,7 +154,7 @@ more complex cache.
 
 \section{Hybrid Cache Evaluation} % (fold)
 \label{sub:hybrid_system_evaluation}
-In these experiments we used a single \emph{large EC2 instance} ({\tt
+In these experiments we used a single \emph{Large EC2 instance} ({\tt
 m1.xlarge}) from the Amazon Cloud consisting of 7.5 GB of memory, 4 virtual EC2
 cores -- equivalent to a 1.0-1.2 GHz 2007 Opteron or 2007 Xeon Processor each
 -- on a 64 bit platform.  Each instance was loaded with an Ubuntu Linux image

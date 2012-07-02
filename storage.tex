@@ -3,14 +3,15 @@ Chapters~\ref{chap:Hybrid_Cache} and~\ref{chap:Eviction_Strategies} is that it
 only utilizes an individual node's RAM\@. When data is evicted, it moves
 straight out of memory, either to be removed from the cache as a whole or
 placed into S3. In EC2 an individual node's memory comprises a fairly small
-fraction of its total storage. For example, the largest instance type,
-{\tt m1.xlarge} consists of 15 GB of memory and \emph{1,690 GB} of disk space.
-RAM comprises less than 1\% of the overall storage capacity of the instance.
+fraction of its total storage. For example, the \emph{Extra Large instance}
+type, {\tt m1.xlarge} consists of 15GB of memory and \emph{1,690GB} of disk
+space.  RAM comprises less than 1\% of the overall storage capacity of the
+instance.
 
 In this chapter we create a cache that takes advantage of the extra storage
 capacity, detail the necessary modifications to existing eviction strategies,
-and present a cost-aware data placement strategy. Further, we demonstrate
-through experimental results that the cost-aware strategy outperforms our
+and present a Cost Aware data placement strategy. Further, we demonstrate
+through experimental results that the Cost Aware strategy outperforms our
 LRU-based eviction strategy.
 
 \section{Storage Hierarchy} % (fold)
@@ -22,7 +23,7 @@ system is to provide fast access to data. To support this, we utilized only
 main memory. As a node's memory filled, we would then allocate further
 instances to handle the overflow.
 
-In Section~\ref{sub:aws_tradeoffs} we further discuss a number of tradeoffs
+In Section~\ref{sub:aws_tradeoffs} we further discuss a number of trade-offs
 between each storage medium. This has a side-effect of establishing a storage
 hierarchy based on the performance of each medium.
 
@@ -53,10 +54,10 @@ highest level of the hierarchy.
 			\multicolumn{1}{c|}{\textbf{Disk}} &
 			\multicolumn{1}{c|}{\textbf{Percentage of total}}\\
       \hline
-			Small (Default)     & 1.70 GB & 160 GB & 1.05\%\\
-								   Medium & 3.75 GB & 410 GB & 0.91\%\\
-						        Large & 7.50 GB & 850 GB & 0.87\%\\
-				      Extra Large & 15.0 GB & 1,690 GB & 0.88\%\\
+			Small (Default)     & 1.70GB & 160GB & 1.05\%\\
+								   Medium & 3.75GB & 410GB & 0.91\%\\
+						        Large & 7.50GB & 850GB & 0.87\%\\
+				      Extra Large & 15.0GB & 1,690GB & 0.88\%\\
       \hline
     \end{tabular}
     \caption{EC2 Instance Storage Capacity}
@@ -70,10 +71,9 @@ highest level of the hierarchy.
 \label{sub:storage_disk}
 Though the disk offers 100-fold increases in storage capacity, this extra space
 comes at a cost. Compared to memory accesses, disk accesses can be very slow.
-Though, if the average data size is large, disk access overheads may be
-amortized over time -- we take advantage of this fact later in the chapter.
-For this reason, the instance's disk acts as the second level of our three-tier
-storage hierarchy.
+It is possible, however, that if the average data size is large, disk access
+overheads may be amortized over time. For this reason, the instance's disk acts
+as the second level of our three-tier storage hierarchy.
 
 % subsection storage_disk (end)
 
@@ -82,7 +82,7 @@ storage hierarchy.
 The final layer of our hierarchy consists of our persistent, cloud-based
 storage option. For our purposes, we consider Amazon's S3 service once again.
 S3 provides us with a monumental amount of storage space (effectively
-infinite), persistence in the event of node failure or contraction, and a
+``infinite''), persistence in the event of node failure or contraction, and a
 secondary region to which service demands can be redirected. However, due to
 the reliability and availability guarantees Amazon makes for S3, the storage
 architecture is implemented in such a robust fashion that performance is
@@ -94,7 +94,8 @@ for this purpose. Purely as conjecture, because these EBS volumes are mounted
 to the instance, we expect the performance of such a layer to closely mimic
 that of the disk. Further, as EBS volume sizes must be predefined, the primary
 benefit of such a layer would be its persistence and the ability to supplement
-the existing disk layers of already-running instances.
+the existing disk layers of already-running instances, losing the size and
+flexibility benefits of S3.
 % subsection storage_cloud (end)
 
 % section storage_hierarchy (end)
@@ -121,7 +122,7 @@ with each key-value pair.
 Retrieval Time & The amount of time this data took to retrieve from the
 			secondary data source\\
 	 Last Access & The time at which the data was last accessed\\
-		Last Reset & The time at which the hitcount was last reset\\
+		Last Reset & The time at which the hit count was last reset\\
 	Last Scoring & The time at which this index was last scored\\
 				 Score & The score for this index\\
       \hline
@@ -133,13 +134,13 @@ Retrieval Time & The amount of time this data took to retrieve from the
 
 Table~\ref{tab:metadata} displays the various pieces of information we maintain
 for each key-value pair. Many of these elements are unnecessary for the
-purposes of data retrieval and a LRU-based eviction scheme. In fact, in that
+purposes of data retrieval and a LRU-based eviction scheme. In fact, in this
 case, only the size, location, and last-access data members serve any purpose.
 We maintain the remaining metadata however, as it will come into play when we
-introduce our cost-aware scoring algorithm later in the chapter. This metadata
+introduce our Cost Aware scoring algorithm later in the chapter. This metadata
 is then stored in a structure we call the \emph{Rolodex}.
 
-The Rolodex operates much like its name-sake, where each index card is
+The Rolodex operates much like its namesake, where each index card is
 associated with a certain key-value pair (indexed on the unique key) and
 contains the associated metadata. While technically this only describes a hash
 table--and in fact, that is how the indices are stored--this structure offers
@@ -148,7 +149,7 @@ the ability to retrieve all elements stored in certain locations, all elements
 with access times past certain time stamps, the ability to compute access
 frequencies, and apply scoring algorithms to each index. As elements are
 accessed in the Rolodex, it also updates the requisite information stored in
-the meta data such as hit count and last-access timestamps.
+the metadata such as hit count and last-access timestamps.
 
 The existence of this Rolodex allows us to more efficiently perform searches as
 demonstrated in Algorithm~\ref{alg:hierarchy_search}. We need only perform a
@@ -159,7 +160,7 @@ performed in $O(1)$ time.
 
 As a note, the three identifiers {\tt :memory}, {\tt :disk} and {\tt :cloud}
 are all arbitrarily defined symbols. This syntax is borrowed from Ruby where a
-colon preceeding a word indicates that the word is a ``symbol''. In essence,
+colon preceding a word indicates that the word is a ``symbol''. In essence,
 they are named identifiers for the locations in which the data is placed. This
 could be performed equally as well with integers, \eg 1, 2 and 3 for memory,
 disk and cloud respectively.
@@ -178,13 +179,13 @@ disk and cloud respectively.
 
 \IF{$meta$.location $=$ {\tt :memory}}
 	\STATE $memory\_queue$.update($key$)
-	\STATE return $memory$.search($key$)
+	\STATE \textbf{return} $memory$.search($key$)
 \ELSIF{$meta$.location $=$ {\tt :disk}}
 	\STATE $disk\_queue$.update($key$)
-	\STATE return $disk$.search($key$)
+	\STATE \textbf{return} $disk$.search($key$)
 \ELSIF{$meta$.location $=$ {\tt :cloud}}
 	\STATE $cloud\_queue$.update($key$)
-	\STATE return $cloud$.search($key$)
+	\STATE \textbf{return} $cloud$.search($key$)
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
@@ -276,14 +277,14 @@ this way, the cache will always try to take advantage of the higher tiers in the
 hierarchy, only resorting to the final tier when the other two have filled.
 
 In many ways this is very similar to the algorithms defined in
-Chapter~\ref{chap:Hybrid_Cache}. The primary difference is that of the rolodex
+Chapter~\ref{chap:Hybrid_Cache}. The primary difference is that of the Rolodex
 and the secondary tier of eviction (memory to disk, and disk to S3 rather than
 memory to S3).
 % section storage_eviction (end)
 
-\section{Cost-Aware Data Placement} % (fold)
+\section{Cost Aware Data Placement} % (fold)
 \label{sec:cost-aware}
-In this section, we introduce the concept of a cost-aware data placement
+In this section, we introduce the concept of a Cost Aware data placement
 algorithm. One of the perceived weaknesses of the LRU-based eviction system is
 that it does not efficiently make use of the resources provided. Data is placed
 into one of the three mediums based entirely on its time since last usage,
@@ -323,7 +324,7 @@ updated data placement algorithm.
 Algorithm~\ref{alg:insert_ca} is actually much simpler than that of the
 previous, LRU-based eviction scheme. Data is simply placed into the first
 medium that has space. The data placement algorithm is performed in a
-background thread and executes continally over the duration of the cache's
+background thread and executes continually over the duration of the cache's
 existence.  This algorithm is described in
 Algorithm~\ref{alg:ca_data_placement}.
 
@@ -340,7 +341,7 @@ Algorithm~\ref{alg:ca_data_placement}.
 	\STATE $disk\_candidates \leftarrow$ Array.new
 	\STATE $cloud\_candidates \leftarrow$ Array.new
 
-	\STATE $\triangleright$ sort the rolodex into descending order by scores and
+	\STATE $\triangleright$ sort the Rolodex into descending order by scores and
 	iterate over each (key,meta) pair finding where they belong
 	\FORALL{$(key, meta) \in rolodex$.sort\_by\_score}
 		\STATE $\triangleright$ if this candidate fits into memory and it is not
@@ -410,14 +411,14 @@ Algorithm~\ref{alg:ca_data_placement}.
 
 Algorithm~\ref{alg:ca_data_placement} begins by executing
 Algorithm~\ref{alg:ca_update_metas}. This algorithm simply updates the scores
-of meta data that has not recently been rescored. Parameters $T_{score}$ and
+of meta data that has not recently been re-scored. Parameters $T_{score}$ and
 $T_{reset}$ are experimental parameters that control the amount of time between
-rescoring and resetting the hitcount respectively. $T_{score}$ is important for
+re-scoring and resetting the hit count respectively. $T_{score}$ is important for
 maintaining smooth operation, as it directly controls the number indices
-that are being rescored and indirectly, the potential number of data elements
+that are being re-scored and indirectly, the potential number of data elements
 that must later be migrated. $T_{reset}$, on the other hand, is important for
 ensuring the freshness of trends. While the scoring algorithm is certainly
-capable of assessing penalties over time, resetting the hitcount of indices
+capable of assessing penalties over time, resetting the hit count of indices
 prevents large trends from dominating the access history by limiting frequency
 assessments to certain time windows.
 
@@ -465,7 +466,7 @@ variables being used are outlined in Table~\ref{tab:scoring_variables}.
     \begin{tabular}{|c|l|}
       \hline
       \multicolumn{1}{|c}{\textbf{Variable}} &
-      \multicolumn{1}{|c|}{\textbf{Meaning}}\\
+      \multicolumn{1}{|c|}{\textbf{Description}}\\
       \hline
 				$D$ & Data object\\
 				$|D|$ & Data size\\
@@ -502,11 +503,11 @@ variables being used are outlined in Table~\ref{tab:scoring_variables}.
 \label{eqn:time}
 \end{equation}
 
-The scoring equation is broken up into four different parts: size, frequency,
-retrieval, and time. By comparing the size as a fraction of the total size of
-memory, those values which are equally as large or larger result in much larger
-fractions. This is subtracted from 1 so that values of $|D|$ closer to zero
-result in larger scores.
+The scoring equation is broken up into four different parts: \emph{size},
+\emph{frequency}, \emph{retrieval}, and \emph{time}. By comparing the size as a
+fraction of the total size of memory, those values which are equally as large
+or larger result in much larger fractions. This is subtracted from 1 so that
+values of $|D|$ closer to zero result in larger scores.
 
 Frequency is then computed as the fraction of all requests which were devoted
 to this data element. In this way, the more frequently accessed values are
@@ -539,7 +540,7 @@ Values of $D_t$ closer to the time at which the data is being rescored are
 considered to be more important than those which have been accessed well into
 the past.
 
-The values $\alpha$,$\beta$, and $\epsilon$ are user-defined parameters that
+The values $\alpha$, $\beta$, and $\epsilon$ are user-defined parameters that
 control the weighting with which each portion of the equation is considered.
 $\alpha$ controls the weighting of the retrieval time and $\epsilon$ controls
 the importance of the time factor. $\beta$ serves a dual role, acting as a
@@ -554,12 +555,12 @@ heavily towards the size factor.
 
 \section{Experiments} % (fold)
 \label{sec:experiments_storage}
-In these experiments we utilized four \emph{large EC2 instances} ({\tt
+In these experiments we utilized four \emph{Large EC2 instances} ({\tt
 m1.large}) from the Amazon Cloud each consisting of 7.5 GB of memory, 4 virtual
 EC2 cores -- equivalent to a 1.0-1.2 GHz 2007 Opteron or 2007 Xeon Processor
 each -- on 64 bit platforms.  Each instance was loaded with an Ubuntu Linux
 image. These four instances are spread into two different regions, {\tt
-us-east-1} (Northern Virginia) and {\tt us-west-2}
+us-east-1} (Virginia) and {\tt us-west-2}
 (Oregon)\cite{amazonEC2locations}. In {\tt us-east-1} we host the
 \emph{cache coordinator} and its single \emph{cache server}, as well as our
 \emph{workload generator}. The instance in {\tt us-east-2} is a web server
@@ -580,22 +581,18 @@ To evaluate the performance of our new hierarchical caching strategies we
 created a \emph{workload generator} to simulate web traffic. This generator was
 installed and run from an instance in the same AWS region as the cache ({\tt
 us-east-1}). The generator is configured with the port number and hostname of
-the cache coordinator as well as a file describing the traffic characteristics
-and, once executed, begins sending a stream of {\tt HTTP GET} requests. All
-told, the generator executes 196,177 requests over a set of 15,000 unique
-keys.
+the cache coordinator as well as a file describing the traffic characteristics.
+Once launched, it begins sending a stream of {\tt HTTP GET} requests to the
+coordinator. All told, the generator executes 196,177 requests over a set of
+15,000 unique keys.
 
 Initially, this portion of the experimental configuration was meant to be
 handled by a well-known, open source traffic generator called SURGE (Scalable
 URL Reference Generator) from Boston University\cite{surge}. This tool offered
 a number of features useful for generating representative web workloads,
-amongst which were
-\begin{inparaenum}[(1)]
-\item file size distributions for the web server,
-\item Zipfian request distributions,
-\item file popularity and
-\item individual client usage patterns including idle periods.
-\end{inparaenum} Sadly we encountered a number of problems with the tool, for
+amongst which were: file size distributions for the web server, Zipfian request
+distributions, file popularity and individual client usage patterns including
+idle periods. Sadly we encountered a number of problems with the tool, for
 which the latest revision occurred in 1998. After spending significant amounts
 of time attempting to debug SURGE ourselves, we resorted to developing our own
 solution.
@@ -619,7 +616,7 @@ of some service. Once again, a reference to Figure~\ref{fig:architecture2}
 demonstrates this configuration. In these situations, we have simulated this
 service execution, which we presume to be quite costly due to the required
 computations or the acquisition of the necessary data, by levying a 75 second
-penalty for cache misses. In this experiment we utilize our elastic cache to
+penalty for each cache miss. In this experiment we utilize our elastic cache to
 support \emph{web service applications}.
 
 Accordingly, our \emph{data repository} is configured with a back-end database
@@ -627,10 +624,10 @@ containing the data for our experiment (data which was generated by SURGE).
 This web application acts as a key-value store where the key is the unique
 filename and the value contains the contents of the file. This server is
 installed and run on another EC2 instance located in a region separate from our
-\emph{cache coordinator} ({\tt us-west-2} as opposed to {\tt us-west-1}). The
+\emph{cache coordinator} ({\tt us-west-2} as opposed to {\tt us-east-1}). The
 intent behind these separate locations is to introduce a slight degree of
 network latency between the \emph{cache coordinator} and the \emph{data
-repository}. This is representative of a very common scenario to web
+repository}. This is representative of a very common scenario for web
 applications.
 
 \begin{figure}
@@ -683,7 +680,7 @@ The \emph{cache coordinator} is deployed on EC2 in the {\tt us-east-1} region.
 This instance is responsible for listening and responding to client requests sent
 from the \emph{workload generator}. This node also manages the \emph{cache
 server}, initially directing its queries there and only resorting to the
-\emph{data repoository} in the event of a cache miss. The \emph{cache server}
+\emph{data repository} in the event of a cache miss. The \emph{cache server}
 is configured to utilize only a small portion of the instance's total capacity,
 reserving 0.2GB of memory and 2GB of disk space. This is to reduce the amount
 of time and bandwidth required to simulate experiments that utilize each layer
@@ -696,14 +693,14 @@ of the hierarchy.
 \label{sec:results_storage}
 To begin, we establish a baseline between two separate experiments. In one run
 of the experiment, we utilize the hierarchical cache using the LRU-based data
-placement schem. In the other, we chose not to utilize the cache, instead
+placement scheme. In the other, we choose not to utilize the cache, instead
 redirecting all requests directly to the \emph{data repository}. As is
 evidenced in Figure~\ref{fig:hierarchy-latency-nocache}, the speedup granted by
 simply using the cache is significant. While the initial run of queries all
 take roughly the same amount of time, regardless of configuration, as the
 coordinator begins to populate the cache, average request times drop immensely.
 What began as a 650ms average drops to 150ms. Request times are reduced to
-$\frac{1}{4}$ that of the cacheless solution.
+$\frac{1}{4}$ that of the cache-less solution.
 
 \begin{figure}
 \begin{center}
@@ -715,15 +712,15 @@ $\frac{1}{4}$ that of the cacheless solution.
 
 Figure~\ref{fig:hierarchy-latency} plots the same LRU-based experimental run as
 in Figure~\ref{fig:hierarchy-latency-nocache}, however this time it is
-contrasted with a third experimental run that utilized our Cost-Aware (CA)
+contrasted with a third experimental run that utilized our Cost Aware (CA)
 data placement scheme. Although here we do not see such a dramatic speed
-increase as the 4x of the last figure, we do see that the Cost-Aware solution
+increase as the 4x of the last figure, we do see that the Cost Aware solution
 does, on average, result in lower query latencies. In the initial 50,000
 queries, the gap in time is not quite as pronounced as it is in the remaining
 requests. This can be explained as the result of the cached data not having
 grown large enough to necessitate eviction from memory or disk, and support the
 assertion that the LRU-based solution provides very good average-case
-performance. Further, this lends itself to the idea that the Cost-Aware scoring
+performance. Further, this lends itself to the idea that the Cost Aware scoring
 and placement algorithms need time to operate, allowing the scores and data to
 settle into place. Based on the trend, had the experiment continued on, LRU was
 beginning to level out at a higher average latency than CA.
@@ -738,26 +735,26 @@ beginning to level out at a higher average latency than CA.
 
 \begin{figure}
   \centering
-  \subfigure[LRU Hitrate]{\
+  \subfigure[LRU Hit Rate]{\
     \label{fig:lru-hitrate}
     \includegraphics[width=3.3in, trim = 9mm 20mm 0mm 0mm,clip]{figures/lru-hitrate.pdf}
   }
-  \subfigure[CA Hitrate]{\
+  \subfigure[CA Hit Rate]{\
     \label{fig:ca-hitrate}
     \includegraphics[width=3.3in, trim = 10mm 20mm 0mm 0mm,clip]{figures/ca-hitrate.pdf}
   }\\
-	\subfigure[Both Hitrates]{\
+	\subfigure[Both Hit Rates]{\
 		\label{fig:ca-lru-hitrate}
 		\includegraphics[width=3.3in, trim = 10mm 20mm 0mm 0mm,clip]{figures/hitrates.pdf}
 	}
-  \caption{Hitrates by data placement strategy}
+  \caption{Hit Rates by data placement strategy}
   \label{fig:hierarchy-hitrate}
 \end{figure}
 
-Figure~\ref{fig:hierarchy-hitrate} presents the cache hitrates for both LRU and
+Figure~\ref{fig:hierarchy-hitrate} presents the cache hit rates for both LRU and
 CA (Figure~\ref{fig:lru-hitrate} and~\ref{fig:ca-hitrate} respectively.
 Figure~\ref{fig:ca-lru-hitrate} places both lines onto the same graph to
-demonstrate that the difference between the two hitrates is minimal at best and
+demonstrate that the difference between the two hit rates is minimal at best and
 eliminate that as a possible source of the query latency disparity.
 
 \begin{figure}

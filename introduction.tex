@@ -26,9 +26,9 @@ Though AWS is composed of many different services the most notable
 demonstration of this concept is the Amazon \emph{Elastic Compute Cloud} (EC2).
 Users of EC2 can instantly scale, both up \emph{and} down, the amount of
 resources allocated to a task, neatly avoiding problems of both under- and
-over-provisioning.  Similarly, Amazon's Simple Storage Service (S3) provides
-access to cloud-backed storage space, allowing users to offload data from their
-servers to Amazon's in a secure and stable manner.
+over-provisioning.  Similarly, Amazon's \emph{Simple Storage Service} (S3)
+provides access to cloud-backed storage space, allowing users to offload data
+from their servers to Amazon's in a secure and stable manner.
 
 By utilizing a combination of EC2 and S3, web service providers can scale their
 resource usage in accordance to their needs. When computational speed becomes
@@ -37,7 +37,7 @@ requirements, helping to alleviate unexpected downtime or slowness -- two major
 players in determining whether a userbase will stick with a product or if they
 will move to another. Likewise, when the amount of data being generated becomes
 too large or cumbersome, developers and technicians can move that data into the
-cloud, potentially freeing them from having to purchase another data server.
+cloud, potentially preventing them from having to purchase another data server.
 
 For a simple example, consider the requirements of a microblogging service
 (which we will call \emph{Aflutter}). Much of the time, Aflutter receives a
@@ -49,7 +49,7 @@ to make jokes. Given that these traffic spikes occur in response to events in
 the world around us, they are supremely difficult, if not impossible to
 anticipate. With the cloud, expansion and accomodation can occur responsively
 and the engineers in charge of keeping Aflutter running smoothly can allocate,
-on the fly, additional computational power to help cope with this surge of
+on the fly, additional computational power to help cope with this surge in
 usage. As the event dies down and demand returns more towards normal levels,
 these extra nodes can be freed up and the costs associated with their usage
 cease to accumulate.
@@ -72,10 +72,10 @@ resources.
 During the creation of our cooperative cache, we also identified a number of
 areas for improvement. The two primary areas we recognized were in the macro
 and micro levels, that is, the management of the cache as a whole and the
-management of each individual cache node. This research is focused additionally
-on the micro level. In particular, this paper focuses on mechanisms for
-managing data placement within the cache and prioritizing the retrieval of
-high-value elements.
+management of each individual cache node. This research is focused on the micro
+level. In particular, this paper focuses on mechanisms for managing data
+placement within the cache and prioritizing the retrieval of high-value
+elements.
 
 \section{Research Contributions} % (fold)
 \label{sec:Research_Contributions}
@@ -90,20 +90,20 @@ The main contributions of our work are as follows:
   \item Mechanisms for dynamically placing data within the hierarchy.
   \item Providing mechanisms for automated cache scaling.
   \item Evaluating multiple approaches for data eviction ranging from First-In
-    First-Out (FIFO), to Least Recently Used (LRU), to our cost-aware approach.
+    First-Out (FIFO), to Least Recently Used (LRU), to our Cost Aware approach.
 \end{itemize}
 
 % section Research Contributions (end)
 
 \section{Thesis Overview} % (fold)
 \label{sec:Thesis_Overview}
-The ultimate goal of this thesis is to describe the various mechanisms
+The ultimate goal of this thesis is to describe the various mechanism
 implemented to improve the performance of each cache node. The following
 chapters provide additional background and the details involved in this
 pursuit. Chapter~\ref{chap:Background} provides background for the creation of
-our key-value store, as well as information about Amazon Web Services (AWS).
-Chapter~\ref{chap:Hybrid_Cache} covers the implementation of a specialized
-cache node that utilizes S3 as a secondary storage medium.
+our key-value store, as well as information about \emph{Amazon Web Services}
+(AWS).  Chapter~\ref{chap:Hybrid_Cache} covers the implementation of a
+specialized cache node that utilizes S3 as a secondary storage medium.
 Chapter~\ref{chap:Eviction_Strategies} evaluates different data eviction
 strategies and their impact on cache performance in situations where unlimited
 storage is infeasible. Chapter~\ref{chap:Storage_Mediums} establishes a

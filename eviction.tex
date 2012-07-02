@@ -9,9 +9,9 @@ parameter that can be used to improve the cost efficiency of applications.
 \label{sec:fifo}
 One of the most simple eviction systems we explore is that of a First-In
 First-Out (FIFO) queue. This ubiquitous queue processing technique operates
-just as the name suggest. Those elements added into the queue first are also
+just as the name suggest: those elements added into the queue first are also
 the first to be removed. As detailed in Section~\ref{sub:hybrid_insert}, in our
-sytem, each key is additionally placed into a priority queue on insertion. Once
+system, each key is additionally placed into a priority queue on insertion. Once
 the system reaches overflow capacity, eviction begins by dequeuing items from
 the priority queue. With a FIFO technique this creates a temporal relationship
 between cache inserts and cache hits. We expect that this configuration will
@@ -28,7 +28,7 @@ In addition to FIFO, we implement a form of cache algorithm that falls into the
 family known as Least Recently Used (LRU). As the name implies, this algorithm
 discards elements that have been used the least recently first. That is,
 elements that have not been accessed in recent history will be ejected from the
-cache before those that have. This closely approximates an optimal eviction
+cache before those that have. This somewhat approximates an optimal eviction
 algorithm, in that the optimal algorithm will discard those elements that
 \emph{will} be used the furthest in the \emph{future}. Comparatively, LRU
 discards those elements that \emph{were} used furthest in the \emph{past}.
@@ -46,11 +46,11 @@ One of the other means of implementation, and the one we use for our
 experiments, involves using a simple queue. However, on each update or
 retrieval the key is first removed from the queue before being pushed onto the
 end. In this way, the oldest data elements are the first to be shifted out.
-Although this means a data element must be deleted before being reinserted each
-and every update, there is no data storage overhead associated with the
-collection and maintenance of timestamps. Since this system is a cache in which
-memory is at a premium, we choose to implement this more computationally
-expensive algorithm.
+Although this means a data element must be found and deleted before being
+reinserted each and every update, there is no data storage overhead associated
+with the collection and maintenance of timestamps. Since this system is a cache
+in which memory is at a premium, we choose to implement this more
+computationally expensive algorithm.
 
 \begin{algorithm}[htp]
 \small
@@ -86,9 +86,9 @@ reinserting it onto the end. The difference between the two is the location of
 the reinsert: \emph{lru\_store} always inserts the new data element while
 \emph{lru\_update} only inserts the data element if it was there previously.
 For our purposes, \emph{lru\_store} is called during cache insertion, when new
-keys are potentially being added into queue, while \emph{lru\_update} is called
-during cache searches when new, previously non-existant elements should not be
-inserted into the queue.
+keys are potentially being added into the queue, while \emph{lru\_update} is
+called during cache searches when new, previously nonexistent elements should
+not be inserted into the queue.
 
 % section lru (end)
 
@@ -112,16 +112,16 @@ previously mentioned algorithms.
 For these experiments we deploy a configuration designed to test our cache
 server implementation. To do so, we distinguish between the server node
 (running the server application) and the experiment broker. The experiment
-broker handles launching the instance of the server, establishes a connection,
-and then proceeds to run a series of specified tests. Since the following tests
-are crafted to assess the performance of individual nodes rather than the
-entire system, the experiment broker does not handle more than one node and
-data is never migrated between nodes. This layout can be seen in
+broker handles launching the server instance, establishes a connection, and
+then proceeds to run a series of specified tests. Since the following tests are
+crafted to assess the performance of individual nodes rather than the entire
+system, the experiment broker does not handle more than one node and data is
+never migrated between nodes. This layout can be seen in
 Figure~\ref{fig:experiment_layout}.
 
 For each query, the experiment broker starts initially by executing a search on
 the key. If the server can retrieve that data, it indicates a successful search
-and proceeds to send it to the experiment broker. This time is considered a
+and proceeds to send it to the experiment broker. This is considered a
 successful hit. If the server is \emph{unable} to retrieve said data, it
 indicates a cache miss and a penalty of 75 seconds is applied to the total
 running time to simulate the amount of time it would take to compute such data
@@ -139,39 +139,38 @@ evicted with a threshold size of 2000).
 \label{fig:experiment_layout}
 \end{figure}
 
-Each server node is running on a 64-bit Ubuntu 10.10 image using Ruby
-1.9.2p180 (MRI). Each image is launched on an \textit{Extra Large Instance}
-(\emph{m1.xlarge}), which, by Amazon's specifications contains 15GB of memory,
-8 EC2 compute units (each compute unit is equivalent to a 1.0-1.2GHz 2007 Xeon
-or 2007 Opteron processor) and has ``high'' I/O performance. For all
-experiments the cache starts cold and both the indices and data are stored in
-memory.
+Each server node is running on a 64-bit Ubuntu 10.10 image using Ruby 1.9.2p180
+(MRI). Each image is launched on an \emph{Extra Large instance} ({\tt
+m1.xlarge}), which, by Amazon's specifications contains 15GB of memory, 8 EC2
+compute units (each compute unit is equivalent to a 1.0-1.2GHz 2007 Xeon or
+2007 Opteron processor) and has ``high'' I/O performance. For all experiments
+the cache starts cold and both the indices and data are stored in memory.
 
-For our experiments we simulate two different data sets and eight
-different experiment configurations, for a total of 16 experiments. Our data
-sets vary in a few regards: size, the number of (key,value) pairs to be stored
-in the cache (threshold), the total number of keys used across the queries, and
-the number of queries.
+For our experiments we simulate two different data sets and eight different
+experimental configurations, for a total of 16 experiments. Our data sets vary
+in a few regards: size, the number of key-value pairs to be stored in the cache
+(\emph{threshold}), the total number of keys used across the queries, and the
+number of queries.
 
-One data set (the first row of table~\ref{tab:data_types}) is designed such
+One data set (the first row of Table~\ref{tab:data_types}) is designed such
 that there are a large number of queries over a fairly large number of keys.
-However, the data is small enough (5 MB) that the cache can maintain a
+However, the data is small enough (5MB) that the cache can maintain a
 significant portion of them (roughly $\frac{2}{3}$) in memory. The other set is
 designed to simulate fewer queries over a wider range of keys (500 keys to 1000
-queries), but with a larger data size (25 MB) limiting the number of values
+queries), but with a larger data size (25MB) limiting the number of values
 maintained in memory by the cache (roughly $\frac{2}{5}$).
 
 Further, we change the way our experiment is configured based on three
-parameters: {\tt Eviction Storage}, {\tt Eviction Strategy}, and {\tt Query
+parameters: \emph{Eviction Storage}, \emph{Eviction Strategy}, and \emph{Query
 Distribution}. The former two are configurations of the server while the latter
 controls how keys are selected by the Experiment Broker.
 
-{\tt Eviction Storage} has two options: {\tt S3}, meaning that data is evicted
+\emph{Eviction Storage} has two options: {\tt S3}, meaning that data is evicted
 from the cache and into S3; and {\tt None}, meaning that data is removed
-entirely. {\tt Eviction Strategy} varies between {\tt FIFO}
+entirely. \emph{Eviction Strategy} varies between {\tt FIFO}
 (First-In-First-Out) and {\tt LRU} (Least-Recently Used). 
 
-Finally, {\tt Query Distribution} varies between {\tt Random} and {\tt Skewed}.
+Finally, \emph{Query Distribution} varies between {\tt Random} and {\tt Skewed}.
 {\tt Random} means that all queries are generated by pseudorandom generator.
 We utilize Ruby's \emph{Kernel::rand} function for this purpose, which as of
 Ruby 1.9.2 uses a modified Mersenne Twister with a period of
@@ -189,8 +188,8 @@ variants.
   \hline
   Data Size & Threshold & Keys & Requests\\
   \hline
-  {\tt 5 MB}& 2000 & 3000 & 8000\\
-  {\tt 25 MB} & 200 & 500 & 1000\\
+  {\tt 5MB}& 2000 & 3000 & 8000\\
+  {\tt 25MB} & 200 & 500 & 1000\\
   \hline
 \end{tabular}
 
@@ -223,11 +222,11 @@ variants.
 \label{sec:results_eviction}
 \begin{figure}
   \centering
-  \subfigure[5mb data files]{\
+  \subfigure[5MB data files]{\
     \label{fig:time-cache-fifo-5mb}
     \includegraphics[width=3.3in, trim = 0mm 10mm 0mm 0mm, clip]{figures/time-cache-fifo-5mb.pdf}
   }
-  \subfigure[25mb data files]{\
+  \subfigure[25MB data files]{\
     \label{fig:time-cache-fifo-25mb}
     \includegraphics[width=3.3in, trim = 10mm 20mm 0mm 0mm, clip]{figures/time-cache-fifo-25mb.pdf}
   }
@@ -237,11 +236,11 @@ variants.
 
 \begin{figure}
   \centering
-  \subfigure[5mb data files]{\
+  \subfigure[5MB data files]{\
     \label{fig:time-cache-lru-5mb}
     \includegraphics[width=3.3in, trim = 9mm 20mm 0mm 0mm, clip]{figures/time-cache-lru-5mb.pdf}
   }
-  \subfigure[25mb data files]{\
+  \subfigure[25MB data files]{\
     \label{fig:time-cache-lru-25mb}
     \includegraphics[width=3.3in, trim = 10mm 20mm 0mm 0mm, clip]{figures/time-cache-lru-25mb.pdf}
   }
@@ -250,7 +249,7 @@ variants.
 \end{figure}
 
 \subsection{Execution Time}
-To start, we compare the execution times of the various experiment
+To start, we compare the execution times of the various experimental
 configurations. In Figure~\ref{fig:time-cache-fifo}, we look at the eviction
 storage options: {\tt S3} and {\tt None} for the distribution types using a
 simple {\tt FIFO} eviction strategy. As expected, the skewed distributions
@@ -261,28 +260,28 @@ of queries fall) of the key range is well within the bounds of the threshold
 providing quite so large a benefit as with the random distribution---with the
 small set of keys retained in-memory for the last half of queries, its benefit
 only plays out for the first half---shaving off approximately 2,000 seconds (33
-minutes) in both the case of the {\tt 5mb} (1.5\%) and {\tt 25mb} (10\%).
+minutes) in both the case of the {\tt 5MB} (1.5\%) and {\tt 25MB} (10\%).
 
-That said, the benefit with randomly distributed queries \emph{is} quite large.
-With {\tt 5mb} data files, we see a difference of 55,000 seconds (15.3 hours),
-a 21\% decrease in time taken. For {\tt 25mb} data files, we peel off 13,200
+That said, the benefit for randomly distributed queries \emph{is} quite large.
+With {\tt 5MB} data files, we see a difference of 55,000 seconds (15.3 hours),
+a 21\% decrease in time taken. For {\tt 25MB} data files, we peel off 13,200
 seconds (3.7 hours), or approximately 28\%.
 
 In Figure~\ref{fig:time-cache-lru}, we make notice of the same patterns using
-the {\tt LRU} eviction strategy. With the {\tt 5mb} files, {\tt S3} shaves off
+the {\tt LRU} eviction strategy. With the {\tt 5MB} files, {\tt S3} shaves off
 approximately 60,000 seconds (16.5 hours or 22\%) for the random distribution
 and 4,000 seconds (1.1 hours or 3\%) for the skewed distribution. Finally, with
-{\tt 25mb} files, we see a reduction of 12,600 seconds (3.5 hours or 28\%) and
+{\tt 25MB} files, we see a reduction of 12,600 seconds (3.5 hours or 28\%) and
 1,900 seconds (32 minutes or 8\%) for random and skewed distributions
 respectively.
 
 \begin{figure}
   \centering
-  \subfigure[5mb data files]{\
+  \subfigure[5MB data files]{\
     \label{fig:missrates-cache-5mb}
     \includegraphics[width=3.3in, trim = 9mm 10mm 0mm 0mm, clip]{figures/missrates-cache-5mb.pdf}
   }
-  \subfigure[25mb data files]{\
+  \subfigure[25MB data files]{\
     \label{fig:missrates-cache-25mb}
     \includegraphics[width=3.3in, trim = 18.5mm 20mm 0mm 0mm, clip]{figures/missrates-cache-25mb.pdf}
   }
@@ -292,11 +291,11 @@ respectively.
 
 \begin{figure}
   \centering
-  \subfigure[5mb data files]{\
+  \subfigure[5MB data files]{\
     \label{fig:missrates-storage-5mb}
     \includegraphics[width=3.3in, trim = 18mm 20mm 0mm 0mm, clip]{figures/missrates-storage-5mb.pdf}
   }
-  \subfigure[25mb data files]{\
+  \subfigure[25MB data files]{\
     \label{fig:missrates-storage-25mb}
     \includegraphics[width=3.3in, trim = 18mm 20mm 0mm 0mm, clip]{figures/missrates-storage-25mb.pdf}
   }
@@ -306,16 +305,16 @@ respectively.
 
 \subsection{Missrate}
 To give a broader sense of how these parameters affect the system we now
-inspect the varying missrates. As one would expect, lower missrates
+inspect the varying miss rates. As one would expect, lower miss rates
 correspond to faster running times, and the greater storage capacity of the
 {\tt S3}-backed configurations facilitate that. Similarly, skewed distributions
-result in lower missrates regardless of eviction strategy as the data set's
+result in lower miss rates regardless of eviction strategy as the data set's
 size is significantly reduced for the duration of the skewing period.
 
-Figure~\ref{fig:missrate-cache} displays the missrates across the different
+Figure~\ref{fig:missrate-cache} displays the miss rates across the different
 eviction strategies. Though eviction strategy seems to have little-to-no effect
-for the {\tt 5mb} files, we do see slightly more pronounced differences with the
-{\tt 25mb}.
+for the {\tt 5MB} files, we do see slightly more pronounced differences with the
+{\tt 25MB}.
 
 In contrast, Figure~\ref{fig:missrate-storage} displays significant gains in
 performance between {\tt NoS3} and {\tt S3}-backed configurations.
@@ -335,7 +334,7 @@ As we can see in many cases the difference in performance is inconclusive at
 best. Occasionally we can see LRU consistently outperforming FIFO as in the
 case of Figures~\ref{fig:perf-S3}. However, in the case of
 Figure~\ref{fig:perf-NoS3-5mb} the FIFO implementation outperforms LRU\@. This
-inconclusivity is not totally unexpected however.
+inconclusiveness is not totally unexpected however.
 Figures~\ref{fig:missrate-cache} demonstrate that the performance difference
 between the two implementations is very small. We do see that with larger files
 the difference is more noticeable earlier on into the Random and Skewed
@@ -344,11 +343,11 @@ eviction method.
 
 \begin{figure}
   \centering
-  \subfigure[5mb data files]{\
+  \subfigure[5MB data files]{\
     \label{fig:perf-NoS3-5mb}
     \includegraphics[width=3.3in, trim = 8mm 10mm 0mm 0mm,clip]{figures/FIFOvsLRU-NoS3-5mb.pdf}
   }
-  \subfigure[25mb data files]{\
+  \subfigure[25MB data files]{\
     \label{fig:perf-NoS3-25mb}
     \includegraphics[width=3.3in, trim = 18.5mm 20mm 0mm 0mm,clip]{figures/FIFOvsLRU-NoS3-25mb.pdf}
   }
@@ -358,11 +357,11 @@ eviction method.
 
 \begin{figure}
   \centering
-  \subfigure[5mb data files]{\
+  \subfigure[5MB data files]{\
     \label{fig:perf-S3-5mb}
     \includegraphics[width=3.3in, trim = 18.5mm 20mm 0mm 0mm,clip]{figures/FIFOvsLRU-S3-5mb.pdf}
   }
-  \subfigure[25mb data files]{\
+  \subfigure[25MB data files]{\
     \label{fig:perf-S3-25mb}
     \includegraphics[width=3.3in, trim = 18.5mm 20mm 0mm 0mm,clip]{figures/FIFOvsLRU-S3-25mb.pdf}
   }

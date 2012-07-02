@@ -211,13 +211,13 @@
 			</array>
 		</dict>
 		<string>D</string>
-		<string>function</string>
+		<string>C</string>
 		<string>E</string>
 		<string>A</string>
 		<string>B</string>
 		<string>weight</string>
 		<string>%</string>
-		<string>C</string>
+		<string>function</string>
 		<string></string>
 		<dict>
 			<key>$classes</key>
@@ -3856,13 +3856,13 @@
 		<string>1e+08</string>
 		<string>10</string>
 		<string>100</string>
-		<string>10 KB</string>
-		<string>1 KB</string>
-		<string>10 MB</string>
-		<string>100 KB</string>
+		<string>10KB</string>
+		<string>1KB</string>
+		<string>10MB</string>
+		<string>100KB</string>
 		<string>1 B</string>
-		<string>1 MB</string>
-		<string>1 GB</string>
+		<string>1MB</string>
+		<string>1GB</string>
 		<string> </string>
 		<dict>
 			<key>$class</key>
