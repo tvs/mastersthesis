@@ -211,13 +211,13 @@
 			</array>
 		</dict>
 		<string>D</string>
-		<string>function</string>
+		<string>%</string>
 		<string>E</string>
 		<string>A</string>
 		<string>B</string>
 		<string>weight</string>
 		<string>C</string>
-		<string>%</string>
+		<string>function</string>
 		<string></string>
 		<dict>
 			<key>$classes</key>
@@ -9928,7 +9928,7 @@
 		<key>drawframe</key>
 		<true/>
 		<key>drawmargin</key>
-		<true/>
+		<false/>
 		<key>expoff0</key>
 		<integer>5</integer>
 		<key>expoff1</key>

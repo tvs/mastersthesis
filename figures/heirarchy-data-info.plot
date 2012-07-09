@@ -211,13 +211,13 @@
 			</array>
 		</dict>
 		<string>D</string>
-		<string>C</string>
+		<string>function</string>
 		<string>E</string>
 		<string>A</string>
 		<string>B</string>
+		<string>C</string>
 		<string>weight</string>
 		<string>%</string>
-		<string>function</string>
 		<string></string>
 		<dict>
 			<key>$classes</key>
@@ -2185,7 +2185,7 @@
 			<key>plotysticks</key>
 			<false/>
 			<key>show</key>
-			<true/>
+			<false/>
 			<key>source</key>
 			<dict>
 				<key>CF$UID</key>
@@ -2735,7 +2735,7 @@
 			<key>plotysticks</key>
 			<false/>
 			<key>show</key>
-			<false/>
+			<true/>
 			<key>source</key>
 			<dict>
 				<key>CF$UID</key>
@@ -3871,7 +3871,7 @@
 				<integer>3</integer>
 			</dict>
 			<key>NS.string</key>
-			<string>PDF of File Existence Likelihood</string>
+			<string>PDF of Query Likelihood</string>
 		</dict>
 		<dict>
 			<key>$class</key>
@@ -5113,7 +5113,7 @@
 		<key>drawframe</key>
 		<true/>
 		<key>drawmargin</key>
-		<true/>
+		<false/>
 		<key>expoff0</key>
 		<integer>5</integer>
 		<key>expoff1</key>

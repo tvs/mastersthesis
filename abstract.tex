@@ -12,12 +12,11 @@ In previous research, we focused on the challenges of data management in Cloud
 environments. Specifically, we considered an elastic \emph{key-value} storage
 system being used to cache intermediate results in a service-oriented system
 and then accelerate future queries through reuse. One of the areas we
-identified as an area of improvement is in placing the data on the individual
-cloud nodes: should data be in memory, on disk, or in a more persistent storage
+identified for improvement is in placing the data on the individual cloud
+nodes: should data be in memory, on disk, or in a more persistent storage
 location? To address this, we developed a scoring algorithm for analyzing each
-key-value pair. We take into account such things as the total memory
-\emph{size} of the instance, the \emph{frequency} with which the key is
-``hit'', the \emph{retrieval-time} (or generation time) for the data associated
-with the key and the overall amount of time since the data was last accessed.
-This score is then used to promote or demote each pair into the appropriate
-storage area.
+key-value pair. We take into account such things as the \emph{total memory
+size} of the instance, the \emph{frequency} with which the key is ``hit'', the
+\emph{retrieval-time} for the data associated with the key and the overall
+amount of time since the data was last accessed. This score is then used to
+promote or demote each pair into the appropriate storage area.
