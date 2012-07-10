@@ -12,8 +12,7 @@ over-provisioning their computational backbone.
 
 Since then, we have introduced and explored the performance implications
 inherent in a cloud-based \emph{elastic cache} for both computational and
-data-intensive applications. In previous
-works\cite{chiu_ijngc11,chiu_ccgrid11}, we investigated different options for
+data-intensive applications. In \cite{chiu_ijngc11,chiu_ccgrid11}, we investigated different options for
 indexing schemes in our individual cache nodes and settled on utilizing
 \bptrees in the general case. In this paper, we continued our studies with the
 elastic cache by adding new features. In Chapter~\ref{chap:Hybrid_Cache} we
@@ -63,6 +62,13 @@ Algorithm~\ref{alg:ca_data_placement} is a very straightforward and simple
 approach to rearranging our data. An approach that manages this in a more
 elegant and time-sensitive manner would almost certainly be necessary when
 workloads are so intense as to stress the limits of the cache.
+
+We also wish to explore a number of replacement policies and their performance
+under different environments. In \cite{web_replacement_policies}, Wong
+identifies a number of situations where different replacement policies are
+applicable. Though LRU and its variants appear in almost all categories, it
+would be revealing to apply different policies for different traffic patterns
+and compare against our Cost Aware approach.
 
 Finally, there is much interest in exploring a comparison between our elastic
 cache and ones that already exist. For example, running benchmarks against

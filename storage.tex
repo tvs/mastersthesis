@@ -12,7 +12,7 @@ In this chapter we create a cache that takes advantage of the extra storage
 capacity, detail the necessary modifications to existing eviction strategies,
 and present a Cost Aware data placement strategy. Further, we demonstrate
 through experimental results that the Cost Aware strategy outperforms our
-LRU-based eviction strategy.
+LRU-based eviction strategy in terms of latency.
 
 \section{Storage Hierarchy} % (fold)
 \label{sec:storage_hierarchy}
@@ -77,7 +77,7 @@ as the second level of our three-tier storage hierarchy.
 
 % subsection storage_disk (end)
 
-\subsection{Cloud} % (fold)
+\subsection{S3} % (fold)
 \label{sub:storage_cloud}
 The final layer of our hierarchy consists of our persistent, cloud-based
 storage option. For our purposes, we consider Amazon's S3 service once again.
@@ -104,7 +104,7 @@ flexibility benefits of S3.
 \label{sec:rolodex}
 This new hierarchy creates certain challenges with the management of our data.
 We can no longer assume that data is stored in memory, and, in the event of
-search failure, default to checking our cloud. Though we could perform a three
+search failure, default to checking S3. Though we could perform a three
 step search, traveling down our storage hierarchy as each previous layer
 results in a miss, this is prohibitive. For this reason we associate metadata
 with each key-value pair.
@@ -158,12 +158,12 @@ location of our data. If no such data exists, we can simply return NULL\@.
 Because our Rolodex is essentially a wrapper to a hash table, these lookups are
 performed in $O(1)$ time.
 
-As a note, the three identifiers {\tt :memory}, {\tt :disk} and {\tt :cloud}
+As a note, the three identifiers {\tt :memory}, {\tt :disk} and {\tt :s3}
 are all arbitrarily defined symbols. This syntax is borrowed from Ruby where a
 colon preceding a word indicates that the word is a ``symbol''. In essence,
 they are named identifiers for the locations in which the data is placed. This
 could be performed equally as well with integers, \eg 1, 2 and 3 for memory,
-disk and cloud respectively.
+disk and S3 respectively.
 
 \begin{algorithm}[htp]
 \small
@@ -183,9 +183,9 @@ disk and cloud respectively.
 \ELSIF{$meta$.location $=$ {\tt :disk}}
 	\STATE $disk\_queue$.update($key$)
 	\STATE \textbf{return} $disk$.search($key$)
-\ELSIF{$meta$.location $=$ {\tt :cloud}}
-	\STATE $cloud\_queue$.update($key$)
-	\STATE \textbf{return} $cloud$.search($key$)
+\ELSIF{$meta$.location $=$ {\tt :s3}}
+	\STATE $s3\_queue$.update($key$)
+	\STATE \textbf{return} $s3$.search($key$)
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
@@ -252,7 +252,7 @@ threshold and we can fit the new element in
 \caption{\label{alg:evict_disk_lru}evict\_from\_disk($size$)}
 \begin{algorithmic}[1]
 \STATE $\triangleright$ Obtain the global eviction queues $disk\_queue$ and
-$cloud\_queue$, $threshold$, and $cloud$ broker
+$s3\_queue$, $threshold$, and $s3$ broker
 \STATE $disk\_limit \leftarrow disk$.size $* threshold$
 
 \STATE $\triangleright$ Continue evicting until our disk is beneath our
@@ -262,9 +262,9 @@ threshold and we can fit the new element in
   \STATE $key \leftarrow disk\_queue$.shift
   \STATE $value \leftarrow disk$.search($key$)
   \STATE $disk$.delete($key$)
-  \STATE $cloud$.insert($key$, $value$)
-	\STATE $cloud\_queue$.push($key$)
-	\STATE $rolodex$.search($key$).location $\leftarrow$ {\tt :cloud}
+  \STATE $s3$.insert($key$, $value$)
+	\STATE $s3\_queue$.push($key$)
+	\STATE $rolodex$.search($key$).location $\leftarrow$ {\tt :s3}
 \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
@@ -305,7 +305,7 @@ updated data placement algorithm.
 \caption{\label{alg:insert_ca}insert\_ca($key$, $value$, $retrieval\_time$)}
 \begin{algorithmic}[1]
 \STATE $size \leftarrow value$.size
-\STATE $location \leftarrow$ {\tt :cloud}
+\STATE $location \leftarrow$ {\tt :s3}
 
 \IF{$memory$.fits($size$)}
   \STATE $memory$.insert($key$, $value$)
@@ -314,7 +314,7 @@ updated data placement algorithm.
 	\STATE $disk$.insert($key$, $value$)
 	\STATE $location \leftarrow$ {\tt :disk}
 \ELSE
-	\STATE $cloud$.insert($key$, $value$)
+	\STATE $s3$.insert($key$, $value$)
 \ENDIF
 
 \STATE $rolodex$.add($key$, $size$, $retrieval\_time$, $location$)
@@ -339,7 +339,7 @@ Algorithm~\ref{alg:ca_data_placement}.
 	\STATE $new\_size\_disk \leftarrow 0$
 	\STATE $memory\_candidates \leftarrow$ Array.new
 	\STATE $disk\_candidates \leftarrow$ Array.new
-	\STATE $cloud\_candidates \leftarrow$ Array.new
+	\STATE $s3\_candidates \leftarrow$ Array.new
 
 	\STATE $\triangleright$ sort the Rolodex into descending order by scores and
 	iterate over each (key,meta) pair finding where they belong
@@ -357,16 +357,16 @@ Algorithm~\ref{alg:ca_data_placement}.
 			\ENDIF
 			\STATE $new\_size\_disk += meta$.size
 		\ELSE
-			\IF{$meta$.location $\neq$ {\tt :cloud}}
-				\STATE $cloud\_candidates$.push($key$)
+			\IF{$meta$.location $\neq$ {\tt :s3}}
+				\STATE $s3\_candidates$.push($key$)
 			\ENDIF
 		\ENDIF
 	\ENDFOR
 
-	\FORALL{$key \in cloud\_candidates$}
+	\FORALL{$key \in s3\_candidates$}
 		\STATE $meta \leftarrow rolodex$.search($key$)
-		\STATE $\triangleright$ migrate from $meta$.location to {\tt :cloud}
-		\STATE $meta$.location $\leftarrow$ {\tt :cloud}
+		\STATE $\triangleright$ migrate from $meta$.location to {\tt :s3}
+		\STATE $meta$.location $\leftarrow$ {\tt :s3}
 	\ENDFOR
 	
 	\FORALL{$key \in disk\_candidates$}
@@ -431,14 +431,14 @@ placed into the $memory\_candidates$ queue. Even if the element is already in
 memory, we increment the $new\_size\_mem$ value with the size of the data to
 acknowledge the fact that this element will be stored within. If the data
 cannot be placed into memory, the same process is duplicated with the disk.
-Failing that, data is placed onto the cloud. By cascading in this manner, data
+Failing that, data is placed into S3. By cascading in this manner, data
 with a higher score may still be placed into memory over one with a lower score
 simply because it fits. This process ensures that each layer is filled more
 fully than if a ``does not fit'' response triggered all subsequent elements
 being placed in the following storage tier.
 
 Finally, data is migrated from its current location to its candidate location.
-This is done in reverse order, first moving elements into the cloud so as to
+This is done in reverse order, first moving elements into S3 so as to
 evacuate the contents of memory and disk. This is important, as in
 space-limited environments, moving to memory or disk first could overflow their
 max contents. Data is then moved to disk so that things are properly removed
@@ -564,7 +564,10 @@ us-east-1} (Virginia) and {\tt us-west-2}
 (Oregon)\cite{amazonEC2locations}. In {\tt us-east-1} we host the
 \emph{cache coordinator} and its single \emph{cache server}, as well as our
 \emph{workload generator}. The instance in {\tt us-east-2} is a web server
-hosting our \emph{data repository}. Figure~\ref{fig:ca-experiment-config}
+hosting our \emph{data repository}. The intent behind these separate locations
+is to introduce a slight degree of network latency between the \emph{cache
+coordinator} and the \emph{data repository}. This is representative of a very
+common scenario for web applications. Figure~\ref{fig:ca-experiment-config}
 contains a simple overview of the configuration.
 
 \begin{figure}
@@ -624,11 +627,7 @@ containing the data for our experiment (data which was generated by SURGE).
 This web application acts as a key-value store where the key is the unique
 filename and the value contains the contents of the file. This server is
 installed and run on another EC2 instance located in a region separate from our
-\emph{cache coordinator} ({\tt us-west-2} as opposed to {\tt us-east-1}). The
-intent behind these separate locations is to introduce a slight degree of
-network latency between the \emph{cache coordinator} and the \emph{data
-repository}. This is representative of a very common scenario for web
-applications.
+\emph{cache coordinator} ({\tt us-west-2} as opposed to {\tt us-east-1}).
 
 \begin{figure}
 \begin{center}
@@ -752,7 +751,7 @@ beginning to level out at a higher average latency than CA.
 \end{figure}
 
 Figure~\ref{fig:hierarchy-hitrate} presents the cache hit rates for both LRU and
-CA (Figure~\ref{fig:lru-hitrate} and~\ref{fig:ca-hitrate} respectively.
+CA (Figure~\ref{fig:lru-hitrate} and~\ref{fig:ca-hitrate} respectively).
 Figure~\ref{fig:ca-lru-hitrate} places both lines onto the same graph to
 demonstrate that the difference between the two hit rates is minimal at best and
 eliminate that as a possible source of the query latency disparity.
@@ -767,7 +766,7 @@ eliminate that as a possible source of the query latency disparity.
     \label{fig:hitloc-disk}
     \includegraphics[width=3.6in, trim = 0mm 20mm 0mm 0mm,clip]{figures/hierarchy-hits-disk.pdf}
   }\\
-	\subfigure[Hits on cloud]{\
+	\subfigure[Hits in S3]{\
 		\label{fig:hitloc-cloud}
 		\includegraphics[width=3.6in, trim = 0mm 20mm 0mm 0mm,clip]{figures/hierarchy-hits-cloud.pdf}
 	}
@@ -780,8 +779,8 @@ scheme. Figure~\ref{fig:hitloc-mem} shows that CA results in a greater number
 of hits in memory than the LRU-based solution. As a result, in
 Figure~\ref{fig:hitloc-disk} we see CA result in fewer hits on disk than LRU\@.
 Lastly, Figure~\ref{fig:hitloc-cloud} does not show a significant difference in
-the number of hits resulting on the cloud. This is largely due to its
-functionality as a last-resort storage medium and the fact that the majority of
-the data can be stored within the cache node itself.
+the number of hits in S3. This is largely due to its functionality as a
+last-resort storage medium and the fact that the majority of the data can be
+stored within the cache node itself.
 
 % section results_storage (end)

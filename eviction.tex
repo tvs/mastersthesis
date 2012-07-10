@@ -25,28 +25,33 @@ computations that immediately follow.
 \section{Least Recently Used} % (fold)
 \label{sec:lru}
 In addition to FIFO, we implement a form of cache algorithm that falls into the
-family known as Least Recently Used (LRU). As the name implies, this algorithm
-discards elements that have been used the least recently first. That is,
-elements that have not been accessed in recent history will be ejected from the
-cache before those that have. This somewhat approximates an optimal eviction
-algorithm, in that the optimal algorithm will discard those elements that
-\emph{will} be used the furthest in the \emph{future}. Comparatively, LRU
-discards those elements that \emph{were} used furthest in the \emph{past}.
+family known as Least Recently Used (LRU)\cite{lru}. As the name implies, this
+algorithm discards elements that have not been referenced for the longest time.
+This somewhat approximates an optimal eviction algorithm, in that the optimal
+algorithm will discard those elements that \emph{will} be used the furthest in
+the \emph{future}. Comparatively, LRU discards those elements that \emph{were}
+used furthest in the \emph{past}. We use this structure due to its wide spread
+popularity, near-optimal performance, and the ease of implementation.
 
-Unfortunately, LRU comes with its own difficulties in implementation.
-One of the ways to implement replacement involves maintaining a counter for
-each data element. Whenever an element is referenced, the current time is
-stored in the table entry for that key. When it comes time to evict, the
-elements with the smallest time values, or those furthest in the past, are
-removed first. This does however mean performing a linear search over the table
-to find the oldest entries for each eviction. This is a very expensive
-operation when eviction occurs frequently.
+Unfortunately, LRU comes with its own issues that often prevent it from being
+used in production. Computationally, maintaining the structure becomes quite
+complex at higher levels of
+associativity\cite{zhang_cache_schemes,deville_replacement}. One of the ways
+to implement LRU involves maintaining a counter for each data element.
+Whenever an element is referenced, the current time is stored in the table
+entry for that key. When it comes time to evict, the elements with the smallest
+time values, or those furthest in the past, are removed first. This does
+however mean performing a linear search over the table to find the oldest
+entries for each eviction. This is a very expensive operation when eviction
+occurs frequently. A similar implementation may use a heap-based priority
+queue, however, in order to find and update the timestamp this takes $O(n)$
+time (for search) in addition to possible rebalances of the heap as a whole.
 
 One of the other means of implementation, and the one we use for our
-experiments, involves using a simple queue. However, on each update or
-retrieval the key is first removed from the queue before being pushed onto the
-end. In this way, the oldest data elements are the first to be shifted out.
-Although this means a data element must be found and deleted before being
+experiments, involves using a simple LIFO (Last-In First-Out) queue. On each
+update or retrieval, the key is first removed from the queue before being pushed
+onto the end. In this way, the oldest data elements are the first to be shifted
+out. Although this means a data element must be found and deleted before being
 reinserted each and every update, there is no data storage overhead associated
 with the collection and maintenance of timestamps. Since this system is a cache
 in which memory is at a premium, we choose to implement this more
@@ -250,13 +255,14 @@ variants.
 
 \subsection{Execution Time}
 To start, we compare the execution times of the various experimental
-configurations. In Figure~\ref{fig:time-cache-fifo}, we look at the eviction
-storage options: {\tt S3} and {\tt None} for the distribution types using a
-simple {\tt FIFO} eviction strategy. As expected, the skewed distributions
-execute in significantly less time regardless of their storage options. This is
-due, in both cases, to the fact that 10\% (the skewed portion upon which 90\%
-of queries fall) of the key range is well within the bounds of the threshold
-(300 and 50 keys accordingly). As an additional result, we do not see {\tt S3}
+configurations outlined in Table~\ref{fig:experiment_configurations}. In
+Figure~\ref{fig:time-cache-fifo}, we look at the eviction storage options: {\tt
+S3} and {\tt None} for the distribution types using a simple {\tt FIFO}
+eviction strategy. As expected, the skewed distributions execute in
+significantly less time regardless of their storage options. This is due, in
+both cases, to the fact that 10\% (the skewed portion upon which 90\% of
+queries fall) of the key range is well within the bounds of the threshold (300
+and 50 keys accordingly). As an additional result, we do not see {\tt S3}
 providing quite so large a benefit as with the random distribution---with the
 small set of keys retained in-memory for the last half of queries, its benefit
 only plays out for the first half---shaving off approximately 2,000 seconds (33

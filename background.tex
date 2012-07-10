@@ -94,11 +94,12 @@ allocating new ones and migrating portions of the data from one to the other.
 
 Figure~\ref{fig:hashing} additionally shows that node $A$ is overflown and a
 new node, $C$, has been allocated from the cloud to be incorporated into our
-system. Assuming that the range between $(75,8]$ on the hash ring is crowded
-with too many keys hashing onto $A$, we can place $C$ strategically, such that
-a large number of the keys in $(75,8]$ will be hashed into it, alleviating the
-load on $A$. For example, the bucket could be placed at $(75 + 8 + r)/2$ and
-the $(k,v)$ pairs hashing into $(75, (75 + 8 + r)/2]$ are migrated into node $C$.
+system. Assuming that the index is in the range $(75,8]$ on the hash ring, and
+it is crowded with too many keys hashing onto $A$, we can place $C$
+strategically, such that a large number of the keys in $(75,8]$ will be hashed
+into it, alleviating the load on $A$. For example, the bucket could be placed
+at $(75 + 8 + r)/2$ and the $(k,v)$ pairs hashing into $(75, (75 + 8 + r)/2]$
+are migrated into node $C$.
 
 In addition to simply splitting and migrating, the coordinator is also where we
 identified areas for future improvement\cite{chiu_ijngc11}. From this
@@ -118,10 +119,11 @@ option to input any of the following:
 The objective of the coordinator is then to maximize cache performance given
 these constratints. The cost-priority parameter allows users to configure the
 importance of performance against cost. Additionally, the macro level is
-responsible for planning the capacity and using an Artificial Neural Network
-(ANN), intelligently predicts the underlying cache nodes' memory and disk loads
-at any time in the future. Time series forecasting is then used to model future
-events and allows for the coordinator to plan and accomodate accordingly.
+responsible for planning the capacity and using an \emph{Artificial Neural
+Network} (ANN), intelligently predicts the underlying cache nodes' memory and
+disk loads at any time in the future. Time series forecasting is then used to
+model future events and allows for the coordinator to plan and accomodate
+accordingly.
 
 % section Cache Coordinator (end)
 
@@ -145,7 +147,7 @@ records need to be transferred. Furthermore, the performance of the entire
 cache is dependent upon the speed of record retrieval and the speed at which it
 can determine hits and misses.
 
-In previous works\cite{chiu_ccgrid11,chiu_ijngc11}, we have analyzed three
+In previous works\cite{chiu_ccgrid11,chiu_ijngc11}, we overview three
 different indexing schemes: \bptrees, Extendible Hashing, and Bloom filters. We
 concluded that \bptrees scale well regardless of system parameters, and
 Extendible Hashing, with its constant-time exact-match searches, could
@@ -153,11 +155,13 @@ outperform \bptrees if their parameters are chosen appropriately. However, if
 the cache system is volatile and migration is invoked often, Extendible Hashing
 indexing schemes will result in increasingly poor migration performance. We
 also note that Counting Bloom Filters should generally be avoided as an
-indexing scheme for elastic key-value storage. As a caveat, however, CBF may
-scale well for applications relying on space-efficient structures. We also make
-note of the interesting observation that CBF migration overheads become better
-over time. As a result of these discoveries, we chose to employ \bptrees for
-our purposes and detail their operation here.
+indexing scheme for elastic key-value storage. Though CBF eventually becomes
+equivalent to the performance of the \bptree, it is time consuming for this
+convergence to occur. As a caveat, however, CBF may scale well for applications
+relying on space-efficient structures. We also make note of the interesting
+observation that CBF migration overheads become better over time. As a result
+of these discoveries, we chose to employ \bptrees for our purposes and detail
+their operation here.
 
 \subsubsection{\bptrees} % (fold)
 \label{subsub:b_trees}
@@ -169,7 +173,7 @@ is linked to the next and previous nodes. In this way, its design is
 specifically crafted to accelerate queries over a range of
 values\cite{navathe,ullman}. In terms of retrieval, \bptrees are balanced data
 structures, where all paths from the root to any leaf have the same length
-(similar to binary trees, with approximately log$_2 n$ depth).
+(similar to balanced binary trees, with approximately log$_2 n$ depth).
 
 \begin{figure}
 \begin{center}

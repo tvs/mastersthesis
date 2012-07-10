@@ -3,17 +3,19 @@
 As mentioned in the previous chapter, both the memory-based and disk-based
 implementations of our consistent cache fail to account for data persistence.
 We mentioned briefly that the most simple persistence method directly utilizes
-S3 to store cached data. We believe, however, that there is more benefit than
-just persistence. For the purposes of cost effectiveness, we posit that it is
-useful to create a hybrid cache.
+S3 to store data. We believe, however, that there is more benefit than just
+persistence. For the purposes of cost effectiveness, we posit that it is useful
+to create a hybrid cache.
 
-While in other versions, the cache grows incrementally without eviction, in
-this variation we use only \emph{one} EC2 node and evict records into S3. We
-believe that this configuration offers an effective means of storing the same
-quantity of keys, with only the slight performance cost of having to query S3.
-The key search function initially queries the EC2 node and upon a miss,
-searches in S3. Additionally, this configuration can also be expanded to grow
-incrementally while still utilizing S3 as storage for evicted records.
+In other versions, the cache grows incrementally without eviction. In this
+variation we use only \emph{one} EC2 node and evict records into S3. We believe
+that this configuration offers an effective means of storing the same quantity
+of keys, with only the slight performance cost of having to query S3.  The key
+search function initially queries the EC2 node and upon a miss, searches in S3.
+Additionally, this configuration can also be expanded to grow incrementally
+while still utilizing S3 as storage for evicted records. Eviction from S3 may
+occur independently as a function of the coordinator or from the cache nodes.
+In this chapter we do not concern ourselves with eviction from S3.
 Figure~\ref{fig:hybrid_setup} shows the structure of a service that utilizes
 our cooperative cache over hybrid nodes.
 
@@ -40,12 +42,12 @@ as long as a node's S3 broker is capable of utilizing a specific bucket.
 
 \subsection{Implementation Redesign} % (fold)
 \label{sec:hybrid_redesign}
-Due to previous works\cite{chiu_ijngc11,chiu_ccgrid11}, our hybrid cache system
-was initially implemented in Java. During initial testing, however, we
+Conforming to previous work\cite{chiu_ijngc11,chiu_ccgrid11}, our hybrid cache
+system was initially implemented in Java. During initial testing, however, we
 identified a number of implementation issues that prompted a total redesign. In
 order to do so and because of the implementer's greater familiarity with the
 language, the redesign was done in Ruby and experiments are run on MRI Ruby
-1.9.2p180. Although a redesign became necessary, the implementation still
+1.9.2p180. Although redesign became necessary, the implementation still
 follows that which is outlined in Chapter~\ref{chap:Background}.
 
 % subsection hybrid_redesign (end)
@@ -61,8 +63,8 @@ Chapter~\ref{chap:Eviction_Strategies}.
 The algorithm for insertion is made more complex by the inclusion of this new
 storage medium. While previously the server needed only worry about inserting
 into the indexing scheme, we now need to keep an additional queue for the
-purposes of eviction. Further, we must track the ``fullness'' of our indexing
-scheme so that we may evict into S3 as we near our thresholds.
+purposes of eviction. Furthermore, we must track the ``fullness'' of our
+indexing scheme so that we may evict into S3 as we near our thresholds.
 Algorithms~\ref{alg:hybrid_insert}-\ref{alg:hybrid_evict} detail this process.
 For the sake of simplicity, we refer to the indexing scheme under the variable
 $memory$ as this algorithm operates independently of its details.
