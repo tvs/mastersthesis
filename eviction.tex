@@ -48,14 +48,14 @@ queue, however, in order to find and update the timestamp this takes $O(n)$
 time (for search) in addition to possible rebalances of the heap as a whole.
 
 One of the other means of implementation, and the one we use for our
-experiments, involves using a simple LIFO (Last-In First-Out) queue. On each
-update or retrieval, the key is first removed from the queue before being pushed
-onto the end. In this way, the oldest data elements are the first to be shifted
-out. Although this means a data element must be found and deleted before being
-reinserted each and every update, there is no data storage overhead associated
-with the collection and maintenance of timestamps. Since this system is a cache
-in which memory is at a premium, we choose to implement this more
-computationally expensive algorithm.
+experiments, involves using a simple FIFO queue. On each update or retrieval,
+the key is first removed from the queue before being pushed onto the end. In
+this way, the oldest data elements are the first to be shifted out. Although
+this means a data element must be found and deleted before being reinserted
+each and every update, there is no data storage overhead associated with the
+collection and maintenance of timestamps. Since this system is a cache in which
+memory is at a premium, we choose to implement this more computationally
+expensive algorithm.
 
 \begin{algorithm}[htp]
 \small
