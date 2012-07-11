@@ -233,7 +233,7 @@ variants.
   }
   \subfigure[25MB data files]{\
     \label{fig:time-cache-fifo-25mb}
-    \includegraphics[width=3.2in, trim = 10mm 20mm 0mm 0mm, clip]{figures/time-cache-fifo-25mb.pdf}
+    \includegraphics[width=3.2in, trim = 0mm 10mm 0mm 0mm, clip]{figures/time-cache-fifo-25mb.pdf}
   }
   \caption{Time taken using FIFO eviction strategy}
   \label{fig:time-cache-fifo}
@@ -243,11 +243,11 @@ variants.
   \centering
   \subfigure[5MB data files]{\
     \label{fig:time-cache-lru-5mb}
-    \includegraphics[width=3.2in, trim = 9mm 20mm 0mm 0mm, clip]{figures/time-cache-lru-5mb.pdf}
+    \includegraphics[width=3.2in, trim = 0mm 10mm 0mm 0mm, clip]{figures/time-cache-lru-5mb.pdf}
   }
   \subfigure[25MB data files]{\
     \label{fig:time-cache-lru-25mb}
-    \includegraphics[width=3.2in, trim = 10mm 20mm 0mm 0mm, clip]{figures/time-cache-lru-25mb.pdf}
+    \includegraphics[width=3.2in, trim = 0mm 10mm 0mm 0mm, clip]{figures/time-cache-lru-25mb.pdf}
   }
   \caption{Time taken using LRU eviction strategy}
   \label{fig:time-cache-lru}
@@ -255,7 +255,7 @@ variants.
 
 \subsection{Execution Time}
 To start, we compare the execution times of the various experimental
-configurations outlined in Table~\ref{fig:experiment_configurations}. In
+configurations outlined in Table~\ref{tab:experiment_configurations}. In
 Figure~\ref{fig:time-cache-fifo}, we look at the eviction storage options: {\tt
 S3} and {\tt None} for the distribution types using a simple {\tt FIFO}
 eviction strategy. As expected, the skewed distributions execute in
@@ -289,7 +289,7 @@ respectively.
   }
   \subfigure[25MB data files]{\
     \label{fig:missrates-cache-25mb}
-    \includegraphics[width=3.2in, trim = 18.5mm 20mm 0mm 0mm, clip]{figures/missrates-cache-25mb.pdf}
+    \includegraphics[width=3.2in, trim = 9mm 10mm 0mm 0mm, clip]{figures/missrates-cache-25mb.pdf}
   }
   \caption{Missrates by eviction strategy}
   \label{fig:missrate-cache}
@@ -299,11 +299,11 @@ respectively.
   \centering
   \subfigure[5MB data files]{\
     \label{fig:missrates-storage-5mb}
-    \includegraphics[width=3.2in, trim = 18mm 20mm 0mm 0mm, clip]{figures/missrates-storage-5mb.pdf}
+    \includegraphics[width=3.2in, trim = 9mm 10mm 0mm 0mm, clip]{figures/missrates-storage-5mb.pdf}
   }
   \subfigure[25MB data files]{\
     \label{fig:missrates-storage-25mb}
-    \includegraphics[width=3.2in, trim = 18mm 20mm 0mm 0mm, clip]{figures/missrates-storage-25mb.pdf}
+    \includegraphics[width=3.2in, trim = 9mm 10mm 0mm 0mm, clip]{figures/missrates-storage-25mb.pdf}
   }
   \caption{Missrates by eviction storage}
   \label{fig:missrate-storage}
@@ -355,7 +355,7 @@ eviction method.
   }
   \subfigure[25MB data files]{\
     \label{fig:perf-NoS3-25mb}
-    \includegraphics[width=3.2in, trim = 18.5mm 20mm 0mm 0mm,clip]{figures/FIFOvsLRU-NoS3-25mb.pdf}
+    \includegraphics[width=3.2in, trim = 8mm 10mm 0mm 0mm,clip]{figures/FIFOvsLRU-NoS3-25mb.pdf}
   }
   \caption{Performance comparison without S3}
   \label{fig:perf-NoS3}
@@ -365,11 +365,11 @@ eviction method.
   \centering
   \subfigure[5MB data files]{\
     \label{fig:perf-S3-5mb}
-    \includegraphics[width=3.2in, trim = 18.5mm 20mm 0mm 0mm,clip]{figures/FIFOvsLRU-S3-5mb.pdf}
+    \includegraphics[width=3.2in, trim = 8mm 10mm 0mm 0mm,clip]{figures/FIFOvsLRU-S3-5mb.pdf}
   }
   \subfigure[25MB data files]{\
     \label{fig:perf-S3-25mb}
-    \includegraphics[width=3.2in, trim = 18.5mm 20mm 0mm 0mm,clip]{figures/FIFOvsLRU-S3-25mb.pdf}
+    \includegraphics[width=3.2in, trim = 8mm 10mm 0mm 0mm,clip]{figures/FIFOvsLRU-S3-25mb.pdf}
   }
   \caption{Performance comparison with S3}
   \label{fig:perf-S3}
