@@ -1,8 +1,105 @@
+\section{Related Works}
+Cloud computing has become an extremely hot topic in both the research and
+business world. According to Armbrust \etal, developers who have innovative new
+ideas are no longer bounded by the capital required for large hardware
+infrastructures\cite{cloud1}. Additionally, companies can retrieve results just
+as fast as their programs scale, as costs are levied on a computational basis.
+
+The sheer amount of research into the Cloud has been tremendous. Study includes
+such topics as: creating frameworks for elastic high performance
+applications\cite{cloud5}, infrastructure engines such as
+\emph{OpenNEbula}\cite{cloud2}, job scheduling systems for cloud service
+providers\cite{cloud3} and distributing indices for multidimensional
+data\cite{cloud4}; each one looking to leverage or support the power that
+elasticity grants.
+
+\subsection{Distributed Data Stores}
+Ramaswamy \etal outline the architecture of a cooperative cache cloud situated
+in edge networks\cite{cloud6}. There they focus on the mechanisms for efficient
+cooperation among caches. They introduce dynamic hashing-based protocols for
+document lookup as well as a utility-based mechanism for placing documents on
+different nodes within the cache cloud.
+
+Chiu \etal go on to leverage elastic cloud caches for accelerating
+service-oriented computations. In this system (which provides the foundation
+for our own system), the cache operates in a cooperative manner and utilizes
+consistent hashing to to assist in document lookup. There they also introduce
+the notion of cache eviction and contraction, merging nodes as query
+intensity subsides. There they show up to 8x speedup by utilizing a cloud cache
+in support of scientific workflow applications.
+
+\emph{Memcached}\cite{memcached,memcachedb} is a widely adopted, open source,
+in-memory \emph{key-value} caching system commonly used for small pieces of
+data (up to 1MB in size). The system is intended for speeding up web
+applications by caching arbitrary data resulting from database calls, API
+calls, or page rendering. In this way \emph{Memcached} reduces database
+load.
+
+Additionally, Amazon \emph{ElastiCache}\cite{amazonElastiCache} is a recently
+announced service that leverages \emph{Memcached} protocols to provide a
+cloud-based in-memory cache. This service is also intended to improve the
+performance of web applications in the same way that \emph{Memcached} is. While
+users are able to manually scale their cache up and down to fit their
+requirements, it does not provide mechanisms for automating this process.
+
+\subsection{Automated Cache Scaling}
+While this paper is focused on low-level performance issues associated with
+individual cloud cache nodes, the ability to scale our cache dynamically
+according to budget and performance parameters is a part of the greater whole.
+Mao \etal introduce a cloud scaling mechanism which automatically scales the
+cloud infrastructure based on performance metrics\cite{cloud9}. Their goal is
+to meet \emph{application level performance} metrics, predominantly that of
+task deadlines, while keeping within a certain cost budget.
+
+The concept of a Cache as a Service (CaaS) is not a new one.
+Kantere \etal propose a model for optimal service pricing of cloud caches based
+on the number of structures in the cache, the amount of time required to build
+it, and maintenance costs (among other things).
+
+\subsection{Web Cache Replacement}
+As a result of the data hierarchy we introduce in
+Chapter~\ref{chap:Storage_Mediums}, the problem of document placement is of
+great interest. Much of the research into this topic is in relation to
+geospatial location\cite{cloud6}. For this reason we turn to a related topic of
+web cache replacement strategies.
+
+Podlipning and B\"osz\"ormenyi in 2003 performed a survey and classification of
+a number of web cache replacement strategies\cite{webcache1}. There they
+classify replacement strategies on a number of factors: \emph{recency},
+\emph{frequency}, \emph{size}, \emph{cost of fetching the object},
+\emph{modification time}, and a heuristic \emph{expiration time}. They then
+perform a survey of different proposals for each of the different eviction
+strategies.
+
+In 2005, Wong performs another survey over web cache replacement policies and
+categorize the available replacement policies\cite{web_replacement_policies}.
+Further they analyze the design considerations behind each of the categories,
+noting such things as \emph{hit ratio}, and \emph{complexity}. Additionally
+they take a more pragmatic approach to their analysis and provide recommended
+replacement policies based on system characteristics and workload features.
+
+Further we inspect more specialized forms of web caching. Reddy and Fletcher
+examine a more intelligent web caching algorithm using document life
+histories\cite{webcache2}. There they suggest that Least Recently Used (LRU)
+techniques are inadequate and they develop a mathematical model to predict the
+future value of cached files.  The mathematical model they build makes use of
+damped exponential smoothing, utilizing file request frequency and the time
+since the last request.
+
+We also examined two randomized algorithms used for web cache page
+replacement\cite{webcache3,webcache4}. While both demonstrated promising
+results, the schemes appeared ill-suited for our purposes. According Psounis
+and Prabhakar, their randomized replacement scheme is used most efficiently
+whenever a large population of objects is accessed ``most'' frequently.
+However, as our cache is developed for service- and data-oriented web services,
+it is likely that data objects will follow predictable distributions.
+
+\section{Previous Works}
 In this section we describe the basic architecture of our cooperative cache. We
 present background information on AWS resource costs and discuss the tradeoffs
 involved in their utilization.
 
-\section{Elastic Key-Value Cache System} % (fold)
+\subsection{Elastic Key-Value Cache System} % (fold)
 \label{sec:Elastic_Key-Value_Cache_System}
 Our main priority, as with any cache, is to provide fast access to the data
 stored within. This was initially achieved by caching all of the data in main
@@ -31,7 +128,7 @@ in charge of several different roles:
 \end{itemize}
 % section Elastic_Key-Value_Cache_System (end)
 
-\section{Cache Coordinator} % (fold)
+\subsection{Cache Coordinator} % (fold)
 \label{sec:Cache_Coordinator}
 % Request handling
 Users interact directly with the coordinator, performing queries in a simple
@@ -127,11 +224,11 @@ accordingly.
 
 % section Cache Coordinator (end)
 
-\section{Cache Node} % (fold)
+\subsection{Cache Node} % (fold)
 \label{sec:Cache_Node}
 % Data storage
 
-\subsection{Indexing}
+\subsubsection{Indexing}
 \label{sub:cache_indexing}
 Each cache node is, at its most basic level, responsible for only a few tasks.
 Intuitively, as this is the area where the key-value pairs are actually stored,
@@ -232,7 +329,7 @@ in Algorithm~\ref{alg:migrate1}.
 
 % subsection Indexing (end)
 
-\subsection{Eviction} % (fold)
+\subsubsection{Eviction} % (fold)
 \label{sub:cache_eviction}
 
 As mentioned, each cache node is also given the ability to evict data. As the
@@ -250,7 +347,7 @@ algorithm of our own creation.
 
 % subsection cache_eviction (end)
 
-\subsection{Migration} % (fold)
+\subsubsection{Migration} % (fold)
 \label{sub:cache_migration}
 
 Finally, each cache node is individually responsible for handling the migration
@@ -269,7 +366,7 @@ over that range becomes very important.
 
 % section Cache_Node (end)
 
-\section{Amazon AWS} % (fold)
+\subsection{Amazon AWS} % (fold)
 \label{sec:Amazon_AWS}
 \emph{Amazon's Web Services} (AWS) are composed of a wide range of tools for
 cloud computing. For the purposes of our cache, we make heavy usage of the
@@ -386,7 +483,7 @@ mounted EBS volume can then be treated a part of the local filesystem.
 Table~\ref{tab:costs_persistent} shows the costs of these two persistent
 storage frameworks.
 
-\subsection{Tradeoffs} % (fold)
+\subsubsection{Tradeoffs} % (fold)
 \label{sub:aws_tradeoffs}
 There are a number of tradeoffs involved in deploying our cache over the AWS
 resources. Here we discuss these tradeoffs briefly.
