@@ -1,12 +1,23 @@
 In recent years, cloud computing has been used to support a plethora of
 applications ranging from simple websites to giant, data- and compute-driven
 services. Previously we have developed a caching system designed to utilize the
-elasticity of the cloud in an automated cost-aware approach. In this paper we
-continue exploration of this elastic \emph{key-value} cache as a means for
+elasticity of the cloud in an automated cost-aware approach. In this thesis we
+continue exploration of our elastic \emph{key-value} cache as a means for
 accelerating both data- and compute-intensive applications. We present a
 hybridized cloud caching system that utilizes in-instance memory, in-instance
 disk, and a persistent storage medium. Further, we create a hierarchy from
 these mediums to reflect the importance of the data within, and provide
-mechanisms for placing this data within the hierarchy. Finally, we evaluate a
-number of data eviction and data placement schemes and their impact on the
-speed performance of our cache.
+mechanisms for placing this data within the hierarchy.
+
+%Utilizing \emph{Amazon Web Services} (AWS), specifically the \emph{Elastic
+%Compute Cloud} (EC2) and \emph{Simple Storage Service} (S3), we construct
+Utilizing \emph{Amazon Web Services} (AWS), we construct experiments designed
+to evaluate a number of data eviction and data placement schemes. As is common
+among web applications, we configure our cache to exist on an edge network with
+a remote back-end data store, introducing a degree of added latency for cache
+misses. The data store consists of a number of files in a size and query
+pattern representative of the average web application. These experiments
+measure query latency and in which medium of the storage hierarchy cache hits
+occur. We show that our cost aware approach to data placement demonstrates
+approximately a 10\% improvement in query latency over Least Recently Used
+(LRU) and a significantly larger number of hits in memory.
